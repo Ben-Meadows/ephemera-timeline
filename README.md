@@ -1,36 +1,58 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Ephemera Timeline
 
-## Getting Started
+A minimal MVP for annotating junk journal pages: upload images, drop markers, and keep a timeline of pages. Built with Next.js 15 (App Router), Supabase (Auth/Postgres/Storage/RLS), Tailwind CSS, Zod, and react-hook-form. Deploy-ready for Vercel.
 
-First, run the development server:
+## Stack
+- Next.js 16 / React 19 (App Router, server actions)
+- TypeScript (strict)
+- Tailwind CSS v4
+- Supabase (Auth, Postgres, Storage, RLS)
+- Zod + react-hook-form
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## Getting started
+1. Install deps
+   ```bash
+   npm install
+   ```
+2. Create `.env.local`
+   ```bash
+   NEXT_PUBLIC_SUPABASE_URL=<your-supabase-url>
+   NEXT_PUBLIC_SUPABASE_ANON_KEY=<your-anon-key>
+   NEXT_PUBLIC_APP_URL=http://localhost:3000
+   ```
+3. Configure Supabase
+   - Run the SQL in `supabase/migrations/0001_init.sql` (SQL editor or `supabase db push`). It creates tables, indexes, RLS policies, and the `journal-pages` storage bucket (public read).
+   - Ensure email/password auth is enabled in Supabase Auth settings.
+4. Start dev server
+   ```bash
+   npm run dev
+   ```
+5. (Optional) Create a demo user via Supabase Auth -> Users (or sign up through the app once running).
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Routes
+- `/` landing
+- `/auth/sign-in`, `/auth/sign-up`
+- `/timeline` (auth) — your pages
+- `/new` (auth) — upload page + metadata
+- `/p/[id]` page detail with annotation canvas
+- `/u/[username]` public profile timeline (public/unlisted pages)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Data model
+See `supabase/migrations/0001_init.sql` for full DDL + RLS.
+- `profiles` (id, username, display_name, avatar_url)
+- `journal_pages` (title, page_date, caption, visibility, image_path)
+- `page_items` (x,y normalized, label, note, category, source_date, source_location)
+- Storage bucket: `journal-pages` at `user_id/page_id/original.ext`
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Auth and permissions
+- Supabase email/password auth.
+- RLS ensures owners manage their own pages/items; public/unlisted pages (and their markers) are readable by anyone.
+- Storage policies allow public read; authenticated users can write to the bucket.
 
-## Learn More
+## Deployment
+- Set env vars on Vercel (same as `.env.local`).
+- Add `*.supabase.co` to remote image domains (already in `next.config.ts`).
+- Run the migration SQL in your production Supabase project before deploying.
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Notes / future
+- Drag-to-move markers and social features are out of scope for this MVP but can be layered on top of the current schema.
