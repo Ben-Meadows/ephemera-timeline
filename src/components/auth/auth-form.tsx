@@ -11,6 +11,10 @@ import { signInSchema, signUpSchema } from "@/lib/validators";
 
 type AuthMode = "sign-in" | "sign-up";
 
+type SignInValues = z.infer<typeof signInSchema>;
+type SignUpValues = z.infer<typeof signUpSchema>;
+type FormValues = SignInValues | SignUpValues;
+
 type AuthFormProps = {
   mode: AuthMode;
   action: (formData: FormData) => Promise<{ error?: string } | void>;
@@ -21,7 +25,6 @@ export function AuthForm({ mode, action }: AuthFormProps) {
   const [pending, startTransition] = useTransition();
 
   const schema = mode === "sign-in" ? signInSchema : signUpSchema;
-  type FormValues = z.infer<typeof schema>;
 
   const {
     register,
@@ -47,6 +50,9 @@ export function AuthForm({ mode, action }: AuthFormProps) {
     });
   });
 
+  // Type-safe register helper
+  const reg = (name: keyof SignUpValues) => register(name as keyof FormValues);
+
   return (
     <form
       onSubmit={onSubmit}
@@ -59,7 +65,7 @@ export function AuthForm({ mode, action }: AuthFormProps) {
           type="email"
           placeholder="you@example.com"
           autoComplete="email"
-          {...register("email")}
+          {...reg("email")}
         />
         {errors.email ? (
           <p className="text-xs text-red-600">{errors.email.message}</p>
@@ -74,9 +80,9 @@ export function AuthForm({ mode, action }: AuthFormProps) {
               id="username"
               placeholder="papercrafter"
               autoComplete="username"
-              {...register("username")}
+              {...reg("username")}
             />
-            {errors.username ? (
+            {"username" in errors && errors.username ? (
               <p className="text-xs text-red-600">{errors.username.message}</p>
             ) : null}
           </div>
@@ -86,9 +92,9 @@ export function AuthForm({ mode, action }: AuthFormProps) {
               id="display_name"
               placeholder="Paper Crafter"
               autoComplete="name"
-              {...register("display_name")}
+              {...reg("display_name")}
             />
-            {errors.display_name ? (
+            {"display_name" in errors && errors.display_name ? (
               <p className="text-xs text-red-600">
                 {errors.display_name.message}
               </p>
@@ -103,7 +109,7 @@ export function AuthForm({ mode, action }: AuthFormProps) {
           id="password"
           type="password"
           autoComplete={mode === "sign-in" ? "current-password" : "new-password"}
-          {...register("password")}
+          {...reg("password")}
         />
         {errors.password ? (
           <p className="text-xs text-red-600">{errors.password.message}</p>
