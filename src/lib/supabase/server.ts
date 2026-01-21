@@ -19,15 +19,16 @@ export async function createSupabaseServerClient() {
       set(name: string, value: string, options: CookieOptions) {
         try {
           cookieStore.set({ name, value, ...options });
-        } catch (error) {
-          console.error("Failed to set cookie", error);
+        } catch {
+          // Expected: cookies can only be modified in Server Actions/Route Handlers
+          // This silently fails during page renders, which is fine
         }
       },
       remove(name: string, options: CookieOptions) {
         try {
           cookieStore.delete({ name, ...options });
-        } catch (error) {
-          console.error("Failed to remove cookie", error);
+        } catch {
+          // Expected: cookies can only be modified in Server Actions/Route Handlers
         }
       },
     },

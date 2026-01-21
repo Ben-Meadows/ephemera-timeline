@@ -47,6 +47,13 @@ export async function Nav({ authenticated }: NavProps) {
             My Timeline
             <span className="absolute -bottom-1 left-0 h-px w-0 bg-[#8b4513] transition-all group-hover:w-full" />
           </Link>
+          <Link
+            href="/timelines"
+            className="font-[family-name:var(--font-crimson)] text-[#5c4033] transition-colors hover:text-[#8b4513] relative group"
+          >
+            Collections
+            <span className="absolute -bottom-1 left-0 h-px w-0 bg-[#8b4513] transition-all group-hover:w-full" />
+          </Link>
           <Link 
             href="/new" 
             className="font-[family-name:var(--font-crimson)] text-[#5c4033] transition-colors hover:text-[#8b4513] relative group"

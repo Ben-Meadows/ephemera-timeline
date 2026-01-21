@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { NewPageForm } from "@/components/page/new-page-form";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { createPageAction } from "./actions";
+import type { Timeline } from "@/lib/types";
 
 export default async function NewPage() {
   const supabase = await createSupabaseServerClient();
@@ -12,6 +13,13 @@ export default async function NewPage() {
   if (!user) {
     redirect("/auth/sign-in");
   }
+
+  // Fetch user's timelines
+  const { data: timelines } = await supabase
+    .from("timelines")
+    .select("*")
+    .eq("user_id", user.id)
+    .order("name");
 
   return (
     <div className="mx-auto max-w-2xl">
@@ -52,7 +60,7 @@ export default async function NewPage() {
           border: '1px solid rgba(139, 69, 19, 0.12)',
         }}
       >
-        <NewPageForm action={createPageAction} />
+        <NewPageForm action={createPageAction} timelines={(timelines as Timeline[]) || []} />
       </div>
     </div>
   );

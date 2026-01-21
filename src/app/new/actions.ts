@@ -165,6 +165,19 @@ export async function createPageAction(
     return { error: insertError.message };
   }
 
+  // Handle timeline assignments
+  const timelineIds = formData.get("timeline_ids");
+  if (timelineIds && typeof timelineIds === "string") {
+    const ids = timelineIds.split(",").filter((id) => id.trim());
+    if (ids.length > 0) {
+      const insertData = ids.map((timeline_id) => ({
+        page_id: pageId,
+        timeline_id: timeline_id.trim(),
+      }));
+      await supabase.from("page_timelines").insert(insertData);
+    }
+  }
+
   logDataChange("create", "page", {
     userId: user.id,
     resourceId: pageId,
@@ -172,5 +185,6 @@ export async function createPageAction(
   });
 
   revalidatePath("/timeline");
+  revalidatePath("/timelines");
   redirect(`/p/${pageId}`);
 }

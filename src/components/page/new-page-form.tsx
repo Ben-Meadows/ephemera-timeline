@@ -4,24 +4,28 @@ import { useRef, useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import type { z } from "zod";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { pageSchema } from "@/lib/validators";
+import type { Timeline } from "@/lib/types";
 
 type FormValues = z.infer<typeof pageSchema>;
 
 type NewPageFormProps = {
   action: (formData: FormData) => Promise<{ error?: string } | void>;
+  timelines?: Timeline[];
 };
 
-export function NewPageForm({ action }: NewPageFormProps) {
+export function NewPageForm({ action, timelines = [] }: NewPageFormProps) {
   const [error, setError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
   const [dragActive, setDragActive] = useState(false);
   const [fileName, setFileName] = useState<string | null>(null);
+  const [selectedTimelines, setSelectedTimelines] = useState<string[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const {
@@ -63,6 +67,14 @@ export function NewPageForm({ action }: NewPageFormProps) {
     }
   };
 
+  const toggleTimeline = (timelineId: string) => {
+    setSelectedTimelines((prev) =>
+      prev.includes(timelineId)
+        ? prev.filter((id) => id !== timelineId)
+        : [...prev, timelineId]
+    );
+  };
+
   const onSubmit = handleSubmit((values) => {
     const file = fileInputRef.current?.files?.[0];
     if (!file) {
@@ -77,6 +89,11 @@ export function NewPageForm({ action }: NewPageFormProps) {
     formData.append("caption", values.caption ?? "");
     formData.append("visibility", values.visibility);
     formData.append("image", file);
+    
+    // Add timeline IDs as comma-separated string
+    if (selectedTimelines.length > 0) {
+      formData.append("timeline_ids", selectedTimelines.join(","));
+    }
 
     startTransition(async () => {
       const result = await action(formData);
@@ -187,6 +204,47 @@ export function NewPageForm({ action }: NewPageFormProps) {
           <option value="public">🌍 Public — Anyone can view</option>
           <option value="unlisted">🔗 Unlisted — Only with link</option>
         </Select>
+      </div>
+
+      {/* Timeline selector */}
+      <div className="space-y-2">
+        <Label>
+          Add to Collections <span className="font-normal text-[#8b7355]">(optional)</span>
+        </Label>
+        {timelines.length > 0 ? (
+          <div className="flex flex-wrap gap-2">
+            {timelines.map((timeline) => (
+              <button
+                key={timeline.id}
+                type="button"
+                onClick={() => toggleTimeline(timeline.id)}
+                className={`
+                  flex items-center gap-1.5 rounded-sm border px-3 py-1.5 transition-all
+                  font-[family-name:var(--font-crimson)] text-sm
+                  ${
+                    selectedTimelines.includes(timeline.id)
+                      ? "border-[#8b4513] bg-[#8b4513]/10 text-[#2c1810]"
+                      : "border-[#d4a574]/50 bg-[#faf6f1] text-[#5c4033] hover:border-[#8b4513]/50"
+                  }
+                `}
+              >
+                <span>{timeline.icon}</span>
+                <span>{timeline.name}</span>
+                {selectedTimelines.includes(timeline.id) && (
+                  <span className="ml-1 text-[#8b4513]">✓</span>
+                )}
+              </button>
+            ))}
+          </div>
+        ) : (
+          <p className="font-[family-name:var(--font-crimson)] text-sm text-[#8b7355]">
+            No collections yet.{" "}
+            <Link href="/timelines" className="text-[#8b4513] underline">
+              Create one
+            </Link>{" "}
+            to organize your pages.
+          </p>
+        )}
       </div>
 
       {error ? (

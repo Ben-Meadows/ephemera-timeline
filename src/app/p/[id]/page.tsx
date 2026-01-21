@@ -1,14 +1,16 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { PageItemsBoard } from "@/components/page/page-items-board";
+import { PageContent } from "@/components/page/page-content";
+import { PageCollectionsManager } from "@/components/page/page-collections-manager";
 import { buttonClasses } from "@/components/ui/button";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
-import type { JournalPage, PageItem, Profile } from "@/lib/types";
+import type { JournalPage, PageItem, Profile, Timeline } from "@/lib/types";
 import {
   createMarkerAction,
   deleteMarkerAction,
   updateMarkerAction,
 } from "@/app/actions/markers";
+import { assignPageToTimelinesAction } from "@/app/actions/timelines";
 
 type PageParams = {
   params: Promise<{ id: string }>;
@@ -63,6 +65,27 @@ export default async function PageDetail({ params }: PageParams) {
     .getPublicUrl(page.image_path);
 
   const isOwner = user?.id === page.user_id;
+
+  // Fetch user's timelines and this page's assigned timelines (for owner only)
+  let userTimelines: Timeline[] = [];
+  let assignedTimelineIds: string[] = [];
+
+  if (isOwner && user) {
+    const { data: timelinesData } = await supabase
+      .from("timelines")
+      .select("*")
+      .eq("user_id", user.id)
+      .order("name", { ascending: true });
+
+    userTimelines = timelinesData ?? [];
+
+    const { data: pageTimelinesData } = await supabase
+      .from("page_timelines")
+      .select("timeline_id")
+      .eq("page_id", page.id);
+
+    assignedTimelineIds = pageTimelinesData?.map((pt) => pt.timeline_id) ?? [];
+  }
   const vis = visibilityLabel(page.visibility);
 
   return (
@@ -142,8 +165,18 @@ export default async function PageDetail({ params }: PageParams) {
         </div>
       )}
 
-      {/* Image and markers board */}
-      <PageItemsBoard
+      {/* Collections manager - only for owner */}
+      {isOwner && (
+        <PageCollectionsManager
+          pageId={page.id}
+          allTimelines={userTimelines}
+          assignedTimelineIds={assignedTimelineIds}
+          onAssign={assignPageToTimelinesAction}
+        />
+      )}
+
+      {/* Image and markers - View/Edit mode */}
+      <PageContent
         pageId={page.id}
         imageUrl={imageUrlData.publicUrl}
         items={items ?? []}
