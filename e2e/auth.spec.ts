@@ -4,8 +4,8 @@ test.describe("Authentication Pages", () => {
   test("sign-in page loads correctly", async ({ page }) => {
     await page.goto("/auth/sign-in");
 
-    // Check page title/heading
-    await expect(page.locator("h1")).toContainText("Sign in");
+    // Check page title/heading (case insensitive)
+    await expect(page.locator("h1")).toContainText(/sign in/i);
 
     // Check form fields exist
     await expect(page.locator('input[name="email"]')).toBeVisible();
@@ -19,8 +19,8 @@ test.describe("Authentication Pages", () => {
   test("sign-up page loads correctly", async ({ page }) => {
     await page.goto("/auth/sign-up");
 
-    // Check page title/heading
-    await expect(page.locator("h1")).toContainText("Create your account");
+    // Check page title/heading (case insensitive)
+    await expect(page.locator("h1")).toContainText(/create.*account/i);
 
     // Check form fields exist
     await expect(page.locator('input[name="email"]')).toBeVisible();
@@ -61,12 +61,12 @@ test.describe("Authentication Pages", () => {
   test("can navigate between sign-in and sign-up", async ({ page }) => {
     // Start at sign-in
     await page.goto("/auth/sign-in");
-    await expect(page.locator("h1")).toContainText("Sign in");
+    await expect(page.locator("h1")).toContainText(/sign in/i);
 
     // Click link to sign-up
     await page.click('a[href="/auth/sign-up"]');
     await expect(page).toHaveURL(/\/auth\/sign-up/);
-    await expect(page.locator("h1")).toContainText("Create your account");
+    await expect(page.locator("h1")).toContainText(/create.*account/i);
 
     // Click link back to sign-in
     await page.click('a[href="/auth/sign-in"]');

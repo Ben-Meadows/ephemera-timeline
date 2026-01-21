@@ -31,10 +31,10 @@ export function AuthForm({ mode, action }: AuthFormProps) {
   return (
     <form
       onSubmit={handleSubmit}
-      className="grid gap-4 rounded-xl border border-slate-100 bg-white p-6 shadow-sm"
+      className="grid gap-5"
     >
-      <div className="space-y-1">
-        <Label htmlFor="email">Email</Label>
+      <div className="space-y-2">
+        <Label htmlFor="email">Email Address</Label>
         <Input
           id="email"
           name="email"
@@ -47,7 +47,7 @@ export function AuthForm({ mode, action }: AuthFormProps) {
 
       {mode === "sign-up" ? (
         <>
-          <div className="space-y-1">
+          <div className="space-y-2">
             <Label htmlFor="username">Username</Label>
             <Input
               id="username"
@@ -60,9 +60,12 @@ export function AuthForm({ mode, action }: AuthFormProps) {
               pattern="^[a-zA-Z0-9_]+$"
               title="Letters, numbers, and underscores only"
             />
+            <p className="font-[family-name:var(--font-crimson)] text-xs italic text-[#8b7355]">
+              This will be your public profile URL
+            </p>
           </div>
-          <div className="space-y-1">
-            <Label htmlFor="display_name">Display name (optional)</Label>
+          <div className="space-y-2">
+            <Label htmlFor="display_name">Display Name <span className="font-normal text-[#8b7355]">(optional)</span></Label>
             <Input
               id="display_name"
               name="display_name"
@@ -74,7 +77,7 @@ export function AuthForm({ mode, action }: AuthFormProps) {
         </>
       ) : null}
 
-      <div className="space-y-1">
+      <div className="space-y-2">
         <Label htmlFor="password">Password</Label>
         <Input
           id="password"
@@ -84,12 +87,28 @@ export function AuthForm({ mode, action }: AuthFormProps) {
           required
           minLength={6}
         />
+        {mode === "sign-up" && (
+          <p className="font-[family-name:var(--font-crimson)] text-xs italic text-[#8b7355]">
+            At least 6 characters
+          </p>
+        )}
       </div>
 
-      {error ? <p className="text-sm text-red-600">{error}</p> : null}
+      {error ? (
+        <div 
+          className="rounded-sm border border-[#722f37]/30 bg-[#722f37]/5 px-4 py-3"
+        >
+          <p className="font-[family-name:var(--font-crimson)] text-sm text-[#722f37]">{error}</p>
+        </div>
+      ) : null}
 
-      <Button type="submit" disabled={pending}>
-        {pending ? "Working..." : mode === "sign-in" ? "Sign in" : "Create account"}
+      <Button type="submit" disabled={pending} className="mt-2">
+        {pending 
+          ? "Working..." 
+          : mode === "sign-in" 
+            ? "✦ Sign In" 
+            : "✦ Create Account"
+        }
       </Button>
     </form>
   );

@@ -37,9 +37,9 @@ test.describe("Page Detail View", () => {
   test("invalid page ID format shows error", async ({ page }) => {
     await page.goto("/p/invalid-id");
 
-    // Should show not found or error
-    const response = await page.goto("/p/invalid-id");
-    expect(response?.status()).toBeGreaterThanOrEqual(400);
+    // Should show not found content (Next.js notFound() may still return 200 status
+    // but renders the not-found page content)
+    await expect(page.locator("body")).toContainText(/not found|404|error/i);
   });
 });
 

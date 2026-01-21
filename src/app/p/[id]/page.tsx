@@ -14,6 +14,21 @@ type PageParams = {
   params: Promise<{ id: string }>;
 };
 
+function formatDate(dateString: string) {
+  const date = new Date(dateString);
+  const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+  return `${months[date.getMonth()]} ${date.getDate()}, ${date.getFullYear()}`;
+}
+
+function visibilityLabel(visibility: string) {
+  const labels: Record<string, { icon: string; text: string }> = {
+    public: { icon: '🌍', text: 'Public' },
+    private: { icon: '🔒', text: 'Private' },
+    unlisted: { icon: '🔗', text: 'Unlisted' },
+  };
+  return labels[visibility] ?? labels.private;
+}
+
 export default async function PageDetail({ params }: PageParams) {
   const { id } = await params;
   const supabase = await createSupabaseServerClient();
@@ -48,42 +63,86 @@ export default async function PageDetail({ params }: PageParams) {
     .getPublicUrl(page.image_path);
 
   const isOwner = user?.id === page.user_id;
+  const vis = visibilityLabel(page.visibility);
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <p className="text-sm font-semibold text-emerald-600">
-            {profile?.username ? `@${profile.username}` : "Journal page"}
-          </p>
-          <h1 className="text-2xl font-semibold text-slate-900">
-            {page.title || "Untitled page"}
-          </h1>
-          <p className="text-sm text-slate-600">
-            {new Date(page.page_date).toLocaleDateString()} · {page.visibility}
-          </p>
-        </div>
-        <div className="flex items-center gap-2">
-          {isOwner ? (
-            <Link
-              href="/new"
-              className={buttonClasses("primary", "sm")}
+      {/* Header */}
+      <div 
+        className="relative rounded-sm bg-[#f5efe6] p-6"
+        style={{
+          boxShadow: '0 2px 12px rgba(44, 24, 16, 0.06)',
+          border: '1px solid rgba(139, 69, 19, 0.1)',
+        }}
+      >
+        <div className="flex items-start justify-between gap-4">
+          <div className="flex-1">
+            {/* Author tag */}
+            {profile?.username && (
+              <Link 
+                href={`/u/${profile.username}`}
+                className="inline-flex items-center gap-2 font-[family-name:var(--font-typewriter)] text-xs uppercase tracking-wider text-[#8b4513] hover:text-[#704214] transition-colors"
+              >
+                <span className="h-2 w-2 rounded-full bg-[#8b4513]" />
+                @{profile.username}
+              </Link>
+            )}
+            
+            {/* Title */}
+            <h1 className="mt-2 font-[family-name:var(--font-playfair)] text-2xl font-semibold text-[#2c1810]">
+              {page.title || "Untitled Page"}
+            </h1>
+            
+            {/* Meta info */}
+            <div className="mt-2 flex flex-wrap items-center gap-4 font-[family-name:var(--font-crimson)] text-sm text-[#5c4033]">
+              <span className="flex items-center gap-1.5">
+                📅 {formatDate(page.page_date)}
+              </span>
+              <span className="flex items-center gap-1.5">
+                {vis.icon} {vis.text}
+              </span>
+              <span className="flex items-center gap-1.5">
+                📍 {items?.length ?? 0} markers
+              </span>
+            </div>
+          </div>
+
+          {/* Actions */}
+          <div className="flex items-center gap-3">
+            {isOwner && (
+              <Link
+                href="/new"
+                className={buttonClasses("secondary", "sm")}
+              >
+                + New Page
+              </Link>
+            )}
+            <Link 
+              href="/timeline" 
+              className="font-[family-name:var(--font-crimson)] text-sm text-[#8b4513] underline decoration-[#d4a574] underline-offset-2 transition-colors hover:text-[#704214]"
             >
-              New page
+              My Timeline
             </Link>
-          ) : null}
-          <Link href="/timeline" className="text-sm text-emerald-700 underline">
-            My timeline
-          </Link>
+          </div>
         </div>
       </div>
 
-      {page.caption ? (
-        <div className="rounded-xl border border-slate-100 bg-white p-4 shadow-sm">
-          <p className="text-sm text-slate-700">{page.caption}</p>
+      {/* Caption */}
+      {page.caption && (
+        <div 
+          className="rounded-sm bg-[#f5efe6] p-5"
+          style={{
+            boxShadow: 'inset 0 0 20px rgba(139, 69, 19, 0.03)',
+            border: '1px solid rgba(139, 69, 19, 0.1)',
+          }}
+        >
+          <p className="font-[family-name:var(--font-crimson)] text-[#5c4033] italic leading-relaxed">
+            "{page.caption}"
+          </p>
         </div>
-      ) : null}
+      )}
 
+      {/* Image and markers board */}
       <PageItemsBoard
         pageId={page.id}
         imageUrl={imageUrlData.publicUrl}

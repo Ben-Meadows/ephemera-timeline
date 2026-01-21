@@ -149,25 +149,42 @@ export function PageItemsBoard({
 
   return (
     <div className="grid gap-6 lg:grid-cols-[2fr_1fr]">
-      <div className="space-y-3">
+      <div className="space-y-4">
+        {/* Image canvas */}
         <div
-          className="relative overflow-hidden rounded-xl border border-slate-100 bg-white shadow-sm"
+          className="relative overflow-hidden rounded-sm cursor-crosshair"
+          style={{
+            boxShadow: '0 4px 20px rgba(44, 24, 16, 0.1)',
+            border: '4px solid #f5efe6',
+            outline: '1px solid rgba(139, 69, 19, 0.15)',
+          }}
           onClick={onCanvasClick}
         >
-          <div className="relative h-[520px] w-full">
+          {/* Photo corner accents */}
+          <div className="absolute top-1 left-1 w-5 h-5 border-l-2 border-t-2 border-[#d4a574] opacity-60 z-10 pointer-events-none" />
+          <div className="absolute top-1 right-1 w-5 h-5 border-r-2 border-t-2 border-[#d4a574] opacity-60 z-10 pointer-events-none" />
+          <div className="absolute bottom-1 left-1 w-5 h-5 border-l-2 border-b-2 border-[#d4a574] opacity-60 z-10 pointer-events-none" />
+          <div className="absolute bottom-1 right-1 w-5 h-5 border-r-2 border-b-2 border-[#d4a574] opacity-60 z-10 pointer-events-none" />
+
+          <div className="relative h-[520px] w-full bg-[#e8dfd3]">
             <Image
               src={imageUrl}
               alt="Journal page"
               fill
               sizes="(min-width: 1024px) 640px, 100vw"
-              className="object-contain bg-slate-50"
+              className="object-contain"
             />
             <div className="absolute inset-0">
+              {/* Existing markers */}
               {items.map((item) => (
                 <button
                   key={item.id}
                   type="button"
-                  className={`absolute h-4 w-4 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-white shadow ${selectedId === item.id ? "bg-emerald-600" : "bg-emerald-400"}`}
+                  className={`absolute h-5 w-5 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 transition-all ${
+                    selectedId === item.id 
+                      ? "bg-[#722f37] border-[#f5efe6] scale-125 shadow-lg" 
+                      : "bg-[#8b4513] border-[#f5efe6] hover:scale-110 shadow-md"
+                  }`}
                   style={{ left: `${item.x * 100}%`, top: `${item.y * 100}%` }}
                   onClick={(e) => {
                     e.stopPropagation();
@@ -178,117 +195,154 @@ export function PageItemsBoard({
                   <span className="sr-only">{item.label}</span>
                 </button>
               ))}
-              {activeCoords ? (
+              {/* Active/new marker */}
+              {activeCoords && !selectedId && (
                 <span
-                  className="absolute h-4 w-4 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-white bg-amber-500 shadow"
+                  className="absolute h-5 w-5 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-[#f5efe6] bg-[#d4a574] shadow-lg animate-pulse"
                   style={{
                     left: `${activeCoords.x * 100}%`,
                     top: `${activeCoords.y * 100}%`,
                   }}
                 />
-              ) : null}
+              )}
             </div>
           </div>
         </div>
 
-        <div className="rounded-xl border border-slate-100 bg-white p-4 shadow-sm">
-          <h3 className="text-sm font-semibold text-slate-800">
-            Items on this page
+        {/* Items list */}
+        <div 
+          className="rounded-sm bg-[#f5efe6] p-5"
+          style={{
+            boxShadow: '0 2px 12px rgba(44, 24, 16, 0.06)',
+            border: '1px solid rgba(139, 69, 19, 0.1)',
+          }}
+        >
+          <h3 className="font-[family-name:var(--font-typewriter)] text-xs uppercase tracking-wider text-[#8b4513]">
+            ✦ Items on this page
           </h3>
-          <div className="mt-3 space-y-2 text-sm">
+          <div className="mt-4 space-y-2">
             {items.length ? (
               items.map((item) => (
                 <button
                   key={item.id}
                   type="button"
-                  className={`flex w-full items-start justify-between rounded-lg border px-3 py-2 text-left transition ${selectedId === item.id ? "border-emerald-200 bg-emerald-50" : "border-slate-100 bg-white hover:bg-slate-50"}`}
+                  className={`flex w-full items-start justify-between rounded-sm px-4 py-3 text-left transition-all ${
+                    selectedId === item.id 
+                      ? "bg-[#8b4513]/10 border border-[#8b4513]/30" 
+                      : "bg-[#faf6f1] border border-transparent hover:border-[#d4a574]"
+                  }`}
                   onClick={() => {
                     setSelectedId(item.id);
                     setCoords(null);
                   }}
                 >
-                  <div>
-                    <p className="font-semibold text-slate-900">{item.label}</p>
-                    {item.note ? (
-                      <p className="text-xs text-slate-600">
-                        {item.note}
+                  <div className="flex items-start gap-3">
+                    <span 
+                      className={`mt-1 h-3 w-3 rounded-full ${
+                        selectedId === item.id ? "bg-[#722f37]" : "bg-[#8b4513]"
+                      }`} 
+                    />
+                    <div>
+                      <p className="font-[family-name:var(--font-playfair)] font-semibold text-[#2c1810]">
+                        {item.label}
                       </p>
-                    ) : null}
+                      {item.note && (
+                        <p className="mt-0.5 font-[family-name:var(--font-crimson)] text-xs text-[#5c4033] italic">
+                          {item.note}
+                        </p>
+                      )}
+                    </div>
                   </div>
-                  {item.category ? (
-                    <span className="rounded-full bg-slate-100 px-2 py-1 text-[11px] font-semibold text-slate-700">
+                  {item.category && (
+                    <span className="rounded-sm border border-[#d4a574] bg-[#f5efe6] px-2 py-0.5 font-[family-name:var(--font-typewriter)] text-[10px] uppercase text-[#8b4513]">
                       {item.category}
                     </span>
-                  ) : null}
+                  )}
                 </button>
               ))
             ) : (
-              <p className="text-slate-600">
-                No markers yet. Click the image to place one.
+              <p className="font-[family-name:var(--font-crimson)] text-sm text-[#5c4033] italic">
+                No markers yet. {canEdit && "Click on the image to add one."}
               </p>
             )}
           </div>
         </div>
       </div>
 
-      <div className="rounded-xl border border-slate-100 bg-white p-4 shadow-sm">
-        <h3 className="text-sm font-semibold text-slate-800">Marker details</h3>
+      {/* Marker form panel */}
+      <div 
+        className="rounded-sm bg-[#f5efe6] p-5 h-fit lg:sticky lg:top-4"
+        style={{
+          boxShadow: '0 4px 20px rgba(44, 24, 16, 0.08)',
+          border: '1px solid rgba(139, 69, 19, 0.12)',
+        }}
+      >
+        <h3 className="font-[family-name:var(--font-typewriter)] text-xs uppercase tracking-wider text-[#8b4513]">
+          ✦ Marker Details
+        </h3>
+        
         {!canEdit ? (
-          <p className="text-sm text-slate-600">
-            Sign in as the owner to add or edit markers.
-          </p>
+          <div className="mt-4 rounded-sm border border-dashed border-[#d4a574] p-4 text-center">
+            <p className="font-[family-name:var(--font-crimson)] text-sm text-[#5c4033]">
+              Sign in as the owner to add or edit markers.
+            </p>
+          </div>
         ) : (
-          <form className="mt-3 space-y-3" onSubmit={onSubmit}>
+          <form className="mt-4 space-y-4" onSubmit={onSubmit}>
             <input type="hidden" value={pageId} {...register("page_id")} />
 
-            <div className="space-y-1">
-              <Label htmlFor="label">Label</Label>
-              <Input id="label" required {...register("label")} />
-              {errors.label ? (
-                <p className="text-xs text-red-600">{errors.label.message}</p>
-              ) : null}
+            <div className="space-y-2">
+              <Label htmlFor="label">Label *</Label>
+              <Input id="label" placeholder="e.g., Train ticket" required {...register("label")} />
+              {errors.label && (
+                <p className="font-[family-name:var(--font-crimson)] text-xs text-[#722f37]">{errors.label.message}</p>
+              )}
             </div>
 
-            <div className="space-y-1">
+            <div className="space-y-2">
               <Label htmlFor="note">Note</Label>
-              <Textarea id="note" rows={3} {...register("note")} />
+              <Textarea id="note" rows={2} placeholder="Story behind this item..." {...register("note")} />
             </div>
 
-            <div className="space-y-1">
+            <div className="space-y-2">
               <Label htmlFor="category">Category</Label>
               <Input
                 id="category"
-                placeholder="ticket, receipt, postcard"
+                placeholder="ticket, receipt, postcard..."
                 {...register("category")}
               />
             </div>
 
-            <div className="grid grid-cols-2 gap-2">
-              <div className="space-y-1">
-                <Label htmlFor="source_date">Source date</Label>
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-2">
+                <Label htmlFor="source_date">Date</Label>
                 <Input id="source_date" type="date" {...register("source_date")} />
               </div>
-              <div className="space-y-1">
-                <Label htmlFor="source_location">Source location</Label>
+              <div className="space-y-2">
+                <Label htmlFor="source_location">Location</Label>
                 <Input
                   id="source_location"
-                  placeholder="Kyoto station"
+                  placeholder="Kyoto"
                   {...register("source_location")}
                 />
               </div>
             </div>
 
-            {error ? <p className="text-sm text-red-600">{error}</p> : null}
+            {error && (
+              <div className="rounded-sm border border-[#722f37]/30 bg-[#722f37]/5 px-4 py-3">
+                <p className="font-[family-name:var(--font-crimson)] text-sm text-[#722f37]">{error}</p>
+              </div>
+            )}
 
-            <div className="flex items-center gap-2">
-              <Button type="submit" disabled={pending}>
+            <div className="flex items-center gap-2 pt-2">
+              <Button type="submit" disabled={pending} className="flex-1">
                 {pending
                   ? "Saving..."
                   : selectedId
-                    ? "Update marker"
-                    : "Create marker"}
+                    ? "✦ Update"
+                    : "✦ Add Marker"}
               </Button>
-              {selectedId ? (
+              {selectedId && (
                 <Button
                   type="button"
                   variant="danger"
@@ -297,11 +351,11 @@ export function PageItemsBoard({
                 >
                   Delete
                 </Button>
-              ) : null}
+              )}
             </div>
-            <p className="text-xs text-slate-500">
-              Click anywhere on the image to set marker position. Coordinates are
-              stored normalized between 0 and 1.
+            
+            <p className="font-[family-name:var(--font-typewriter)] text-[10px] text-[#8b7355] text-center">
+              Click anywhere on the image to place marker
             </p>
           </form>
         )}
