@@ -21,6 +21,12 @@ export type AuditEventType =
   | "marker.create"
   | "marker.update"
   | "marker.delete"
+  | "timeline.create"
+  | "timeline.update"
+  | "timeline.delete"
+  | "page_timelines.create"
+  | "page_timelines.update"
+  | "page_timelines.delete"
   | "validation.failure"
   | "ratelimit.exceeded"
   | "security.xss_attempt";
@@ -185,11 +191,12 @@ export function logXSSAttempt(
  */
 export function logDataChange(
   action: "create" | "update" | "delete",
-  resource: "page" | "marker",
+  resource: "page" | "marker" | "timeline" | "page_timelines",
   options: {
     userId: string;
     resourceId: string;
     ip?: string;
+    details?: Record<string, unknown>;
   }
 ): void {
   const event: AuditEventType = `${resource}.${action}`;
@@ -199,6 +206,7 @@ export function logDataChange(
     ip: options.ip,
     details: {
       resourceId: options.resourceId,
+      ...options.details,
     },
     success: true,
   });
