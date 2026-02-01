@@ -99,7 +99,7 @@ export default async function TimelinePage({
     : null;
 
   return (
-    <div className="space-y-6">
+    <div className="mx-auto max-w-5xl px-4 py-8 space-y-6">
       {/* Header */}
       <div
         className="rounded-sm bg-[#f5efe6] p-6"

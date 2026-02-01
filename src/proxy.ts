@@ -2,10 +2,10 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
 /**
- * Security headers middleware
+ * Security headers proxy
  * Adds security headers to all responses
  */
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   // Get the response
   const response = NextResponse.next();
 
@@ -70,7 +70,7 @@ export function middleware(request: NextRequest) {
 }
 
 /**
- * Configure which paths the middleware runs on
+ * Configure which paths the proxy runs on
  * Exclude static files and API routes that handle their own headers
  */
 export const config = {

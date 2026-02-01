@@ -46,7 +46,7 @@ export default async function RootLayout({
         }}
       >
         <Nav authenticated={!!user} />
-        <main className="mx-auto max-w-5xl px-4 py-8">{children}</main>
+        <main>{children}</main>
       </body>
     </html>
   );

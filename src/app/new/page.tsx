@@ -22,7 +22,7 @@ export default async function NewPage() {
     .order("name");
 
   return (
-    <div className="mx-auto max-w-2xl">
+    <div className="mx-auto max-w-2xl px-4 py-8">
       {/* Header card */}
       <div 
         className="relative mb-6 rounded-sm bg-[#f5efe6] p-6"

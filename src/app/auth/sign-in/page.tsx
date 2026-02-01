@@ -4,7 +4,7 @@ import { signInAction } from "../actions";
 
 export default function SignInPage() {
   return (
-    <div className="mx-auto max-w-md">
+    <div className="mx-auto max-w-md px-4 py-8">
       {/* Card container */}
       <div 
         className="relative rounded-sm bg-[#f5efe6] p-8"

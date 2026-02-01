@@ -3,7 +3,7 @@ import { buttonClasses } from "@/components/ui/button";
 
 export default function NotFound() {
   return (
-    <div className="flex min-h-[60vh] items-center justify-center">
+    <div className="mx-auto max-w-5xl px-4 py-8 flex min-h-[60vh] items-center justify-center">
       <div 
         className="relative max-w-md rounded-sm bg-[#f5efe6] p-10 text-center"
         style={{

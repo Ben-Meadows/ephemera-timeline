@@ -33,7 +33,7 @@ export default async function TimelinesPage() {
   }));
 
   return (
-    <div className="space-y-8">
+    <div className="mx-auto max-w-5xl px-4 py-8 space-y-8">
       {/* Header */}
       <div
         className="rounded-sm bg-[#f5efe6] p-6"

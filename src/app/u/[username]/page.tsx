@@ -28,7 +28,7 @@ export default async function PublicProfile({ params }: Params) {
     .order("page_date", { ascending: false });
 
   return (
-    <div className="space-y-8">
+    <div className="mx-auto max-w-5xl px-4 py-8 space-y-8">
       {/* Profile Header */}
       <div 
         className="relative rounded-sm bg-[#f5efe6] p-8 text-center"

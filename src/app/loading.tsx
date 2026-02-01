@@ -1,6 +1,6 @@
 export default function Loading() {
   return (
-    <div className="flex min-h-[40vh] items-center justify-center">
+    <div className="mx-auto max-w-5xl px-4 py-8 flex min-h-[40vh] items-center justify-center">
       <div className="text-center">
         {/* Animated stamp */}
         <div 
