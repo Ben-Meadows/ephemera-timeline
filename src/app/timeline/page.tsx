@@ -100,7 +100,7 @@ export default async function TimelinePage({
       >
         {/* Dark header band */}
         <div
-          className="relative p-6"
+          className="p-6"
           style={{
             backgroundColor: "#210706",
             borderLeft: "4px solid #891D1A",
