@@ -7,7 +7,7 @@ import Link from "next/link";
 
 export function Hero() {
   return (
-    <section className="relative min-h-screen flex flex-col justify-center items-center pt-20 overflow-hidden bg-[#faf6f1]">
+    <section className="relative min-h-screen flex flex-col justify-center items-center pt-20 overflow-hidden bg-[#F1E6D2]">
       {/* Decorative Background Elements */}
       <div className="absolute inset-0 opacity-5 pointer-events-none">
         <svg className="w-full h-full" xmlns="http://www.w3.org/2000/svg">
@@ -25,36 +25,38 @@ export function Hero() {
           transition={{ duration: 0.8, ease: "easeOut" }}
           className="text-left"
         >
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#8b4513]/5 border border-[#8b4513]/20 mb-6">
-            <span className="w-2 h-2 rounded-full bg-[#722f37]"></span>
-            <span className="font-[family-name:var(--font-typewriter)] text-xs text-[#8b4513] uppercase tracking-widest">Est. 2026</span>
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full mb-6" style={{ backgroundColor: "rgba(137,29,26,0.06)", border: "1px solid rgba(137,29,26,0.2)" }}>
+            <span className="w-2 h-2 rounded-full" style={{ backgroundColor: "#891D1A" }} />
+            <span className="font-[family-name:var(--font-crimson)] text-xs italic text-[#891D1A]">Est. 2026</span>
           </div>
-          
-          <h1 className="font-[family-name:var(--font-playfair)] text-5xl md:text-7xl leading-[1.1] text-[#2c1810] mb-6">
+
+          <h1 className="font-[family-name:var(--font-playfair)] text-5xl md:text-7xl leading-[1.1] text-[#210706] mb-6">
             Your collected <br/>
-            <span className="italic text-[#8b4513]">moments</span>, <br/>
+            <span className="italic text-[#891D1A]">moments</span>, <br/>
             beautifully preserved.
           </h1>
-          
-          <p className="font-[family-name:var(--font-crimson)] text-xl md:text-2xl text-[#5a3a2a] max-w-lg mb-10 leading-relaxed">
+
+          <p className="font-[family-name:var(--font-crimson)] text-xl md:text-2xl text-[#5E657B] max-w-lg mb-10 leading-relaxed">
             Upload photos of your junk journal pages. Drop markers on every ticket, postcard, and memory. Build a timeline that tells your story.
           </p>
           
           <div className="flex flex-wrap items-center gap-4">
-            <Link 
+            <Link
               href="/auth/sign-up"
-              className="group relative px-8 py-4 bg-[#2c1810] text-[#faf6f1] font-[family-name:var(--font-crimson)] text-lg rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-all hover:-translate-y-1"
+              className="group relative px-8 py-4 font-[family-name:var(--font-crimson)] text-lg rounded-sm overflow-hidden shadow-lg hover:shadow-xl transition-all hover:-translate-y-1"
+              style={{ backgroundColor: "#891D1A", color: "#F1E6D2" }}
             >
               <span className="relative z-10 flex items-center gap-2">
                 Start Your Collection
                 <PenTool className="w-4 h-4" />
               </span>
-              <div className="absolute inset-0 bg-[#722f37] transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-300"></div>
+              <div className="absolute inset-0 transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-300" style={{ backgroundColor: "#210706" }} />
             </Link>
-            
-            <Link 
+
+            <Link
               href="/timeline"
-              className="px-8 py-4 bg-transparent border border-[#8b4513]/30 text-[#2c1810] font-[family-name:var(--font-crimson)] text-lg rounded-lg hover:bg-[#8b4513]/5 transition-colors"
+              className="px-8 py-4 bg-transparent font-[family-name:var(--font-crimson)] text-lg rounded-sm transition-colors hover:bg-[#891D1A]/10"
+              style={{ border: "1px solid rgba(137,29,26,0.35)", color: "#210706" }}
             >
               View Timeline
             </Link>

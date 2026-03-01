@@ -1,20 +1,25 @@
 @import "tailwindcss";
 
 :root {
-  /* Warm Ephemera Color Palette */
-  --color-cream: #faf6f1;
-  --color-paper: #f5efe6;
+  /* Ephemera Color Palette */
+  --color-olivewood: #210706;
+  --color-tuscan-red: #891D1A;
+  --color-slate-blue: #5E657B;
+  --color-biscotti: #F1E6D2;
+  --color-polaroid: #FAFAF9;
+
+  /* Legacy aliases — kept for any remaining references */
+  --color-cream: #F1E6D2;
+  --color-paper: #F1E6D2;
   --color-paper-dark: #e8dfd3;
-  --color-espresso: #2c1810;
-  --color-coffee: #5c4033;
-  --color-saddle: #8b4513;
-  --color-burgundy: #722f37;
-  --color-tan: #d4a574;
-  --color-gold: #d4a373;
-  --color-sepia: #704214;
-  
-  --background: var(--color-cream);
-  --foreground: var(--color-espresso);
+  --color-espresso: #210706;
+  --color-coffee: #5E657B;
+  --color-saddle: #891D1A;
+  --color-burgundy: #891D1A;
+  --color-tan: #891D1A;
+
+  --background: var(--color-biscotti);
+  --foreground: var(--color-olivewood);
 }
 
 @theme inline {
