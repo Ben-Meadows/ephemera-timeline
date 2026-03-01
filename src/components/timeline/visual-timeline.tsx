@@ -15,7 +15,7 @@ type VisualTimelineProps = {
 
 function groupPagesByMonth(pages: (JournalPage & { image_url?: string })[]) {
   const groups: Record<string, (JournalPage & { image_url?: string })[]> = {};
-  
+
   pages.forEach((page) => {
     const date = new Date(page.page_date);
     const key = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`;
@@ -32,16 +32,16 @@ function groupPagesByMonth(pages: (JournalPage & { image_url?: string })[]) {
       const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
       return {
         key,
-        label: `${monthNames[parseInt(month) - 1]} ${year}`,
+        label: `${monthNames[parseInt(month) - 1]} '${year.slice(2)}`,
         pages: pages.sort((a, b) => new Date(a.page_date).getTime() - new Date(b.page_date).getTime()),
       };
     });
 }
 
-export function VisualTimeline({ 
-  pages, 
-  label, 
-  color = "#8b4513",
+export function VisualTimeline({
+  pages,
+  label,
+  color = "#891D1A",
   timelineId,
   showEmptyMessage = false,
 }: VisualTimelineProps) {
@@ -59,7 +59,6 @@ export function VisualTimeline({
     }
   }, []);
 
-  // Mouse drag handlers for horizontal scrolling
   const handleMouseDown = (e: React.MouseEvent) => {
     if (!scrollRef.current) return;
     setIsDragging(true);
@@ -67,13 +66,8 @@ export function VisualTimeline({
     setScrollLeft(scrollRef.current.scrollLeft);
   };
 
-  const handleMouseLeave = () => {
-    setIsDragging(false);
-  };
-
-  const handleMouseUp = () => {
-    setIsDragging(false);
-  };
+  const handleMouseLeave = () => setIsDragging(false);
+  const handleMouseUp = () => setIsDragging(false);
 
   const handleMouseMove = (e: React.MouseEvent) => {
     if (!isDragging || !scrollRef.current) return;
@@ -83,66 +77,53 @@ export function VisualTimeline({
     scrollRef.current.scrollLeft = scrollLeft - walk;
   };
 
-  // Wheel scroll handler - scroll horizontally when mouse wheel is used
   const handleWheel = useCallback((e: WheelEvent) => {
     if (!scrollRef.current) return;
-    
-    // Prevent vertical page scroll when hovering over timeline
     e.preventDefault();
-    
-    // Convert vertical scroll to horizontal
     scrollRef.current.scrollLeft += e.deltaY * 1.5;
   }, []);
 
-  // Add wheel event listener
   useEffect(() => {
     const scrollElement = scrollRef.current;
     if (!scrollElement) return;
-
     scrollElement.addEventListener("wheel", handleWheel, { passive: false });
-    return () => {
-      scrollElement.removeEventListener("wheel", handleWheel);
-    };
+    return () => scrollElement.removeEventListener("wheel", handleWheel);
   }, [handleWheel]);
 
-  // Empty state for individual timelines (compact)
+  // Empty state — compact (individual timelines)
   if (pages.length === 0 && !showEmptyMessage) {
     return (
       <div
-        className="relative rounded-sm bg-[#f5efe6] overflow-hidden"
+        className="relative rounded-sm overflow-hidden"
         style={{
-          boxShadow: "0 2px 12px rgba(44, 24, 16, 0.04)",
-          border: "1px solid rgba(139, 69, 19, 0.08)",
+          backgroundColor: "#F1E6D2",
+          border: "1px solid rgba(137, 29, 26, 0.1)",
         }}
       >
-        {/* Label header */}
         {label && (
           <div
             className="flex items-center gap-2 px-4 py-2 border-b"
-            style={{ borderColor: `${color}20` }}
+            style={{ borderColor: "rgba(137, 29, 26, 0.15)", backgroundColor: "#210706" }}
           >
-            <div
-              className="w-3 h-3 rounded-full"
-              style={{ backgroundColor: color }}
-            />
-            <span className="font-[family-name:var(--font-playfair)] text-sm font-semibold text-[#2c1810]">
+            <div className="w-2 h-2 rounded-full" style={{ backgroundColor: color }} />
+            <span className="font-[family-name:var(--font-playfair)] text-sm font-semibold text-[#F1E6D2]">
               {label}
             </span>
-            <span className="font-[family-name:var(--font-typewriter)] text-[10px] text-[#8b7355]">
-              (empty)
+            <span className="font-[family-name:var(--font-crimson)] text-xs text-[#F1E6D2]/50 italic">
+              empty
             </span>
             {timelineId && (
               <Link
                 href={`/timeline?filter=${timelineId}`}
-                className="ml-auto font-[family-name:var(--font-typewriter)] text-[10px] text-[#8b4513] hover:underline"
+                className="ml-auto font-[family-name:var(--font-crimson)] text-xs text-[#891D1A] hover:underline"
               >
                 Filter →
               </Link>
             )}
           </div>
         )}
-        <div className="py-6 px-4 text-center">
-          <p className="font-[family-name:var(--font-crimson)] text-sm text-[#8b7355]">
+        <div className="py-5 px-4 text-center">
+          <p className="font-[family-name:var(--font-crimson)] text-sm text-[#5E657B] italic">
             No pages in this collection yet
           </p>
         </div>
@@ -150,28 +131,25 @@ export function VisualTimeline({
     );
   }
 
-  // Empty state for master timeline (prominent)
+  // Empty state — prominent (master timeline)
   if (pages.length === 0 && showEmptyMessage) {
     return (
       <div
-        className="relative rounded-sm bg-[#f5efe6] p-8 text-center"
+        className="relative rounded-sm p-8 text-center"
         style={{
-          boxShadow: "0 2px 12px rgba(44, 24, 16, 0.06)",
-          border: "1px dashed rgba(139, 69, 19, 0.3)",
+          backgroundColor: "#F1E6D2",
+          border: "1px dashed rgba(137, 29, 26, 0.3)",
         }}
       >
         {label && (
           <div className="flex items-center justify-center gap-2 mb-4">
-            <div
-              className="w-4 h-4 rounded-full"
-              style={{ backgroundColor: color }}
-            />
-            <span className="font-[family-name:var(--font-playfair)] text-lg font-semibold text-[#2c1810]">
+            <div className="w-3 h-3 rounded-full" style={{ backgroundColor: color }} />
+            <span className="font-[family-name:var(--font-playfair)] text-lg font-semibold text-[#210706]">
               {label}
             </span>
           </div>
         )}
-        <p className="font-[family-name:var(--font-crimson)] text-[#5c4033]">
+        <p className="font-[family-name:var(--font-crimson)] text-[#5E657B]">
           No pages to display on the timeline.
         </p>
       </div>
@@ -180,32 +158,33 @@ export function VisualTimeline({
 
   return (
     <div
-      className="relative rounded-sm bg-[#f5efe6] overflow-hidden"
+      className="relative rounded-sm overflow-hidden"
       style={{
-        boxShadow: "0 4px 20px rgba(44, 24, 16, 0.08)",
-        border: "1px solid rgba(139, 69, 19, 0.12)",
+        backgroundColor: "#F1E6D2",
+        boxShadow: "0 4px 20px rgba(33, 7, 6, 0.1)",
+        border: "1px solid rgba(137, 29, 26, 0.15)",
       }}
     >
       {/* Label header */}
       {label && (
         <div
           className="flex items-center gap-2 px-4 py-3 border-b"
-          style={{ borderColor: `${color}30` }}
+          style={{
+            backgroundColor: "#210706",
+            borderColor: "rgba(137, 29, 26, 0.3)",
+            borderLeft: `4px solid ${color}`,
+          }}
         >
-          <div
-            className="w-4 h-4 rounded-full shadow-sm"
-            style={{ backgroundColor: color }}
-          />
-          <span className="font-[family-name:var(--font-playfair)] text-base font-semibold text-[#2c1810]">
+          <span className="font-[family-name:var(--font-playfair)] text-sm font-semibold text-[#F1E6D2]">
             {label}
           </span>
-          <span className="font-[family-name:var(--font-typewriter)] text-[10px] text-[#8b7355]">
+          <span className="font-[family-name:var(--font-crimson)] text-xs text-[#F1E6D2]/50 italic">
             {pages.length} {pages.length === 1 ? "page" : "pages"}
           </span>
           {timelineId && (
             <Link
               href={`/timeline?filter=${timelineId}`}
-              className="ml-auto font-[family-name:var(--font-typewriter)] text-xs text-[#8b4513] hover:underline"
+              className="ml-auto font-[family-name:var(--font-crimson)] text-xs text-[#891D1A] hover:underline"
             >
               Filter →
             </Link>
@@ -213,14 +192,14 @@ export function VisualTimeline({
         </div>
       )}
 
-      {/* Scroll hint gradients */}
-      <div className="pointer-events-none absolute left-0 top-12 bottom-0 w-20 bg-gradient-to-r from-[#f5efe6] to-transparent z-10" />
-      <div className="pointer-events-none absolute right-0 top-12 bottom-0 w-20 bg-gradient-to-l from-[#f5efe6] to-transparent z-10" />
+      {/* Scroll fade gradients */}
+      <div className="pointer-events-none absolute left-0 top-12 bottom-0 w-16 bg-gradient-to-r from-[#F1E6D2] to-transparent z-10" />
+      <div className="pointer-events-none absolute right-0 top-12 bottom-0 w-16 bg-gradient-to-l from-[#F1E6D2] to-transparent z-10" />
 
-      {/* Scrollable container - centered content with proper spacing */}
+      {/* Scrollable container */}
       <div
         ref={scrollRef}
-        className={`overflow-x-auto scrollbar-thin scrollbar-thumb-[#d4a574] scrollbar-track-transparent ${
+        className={`overflow-x-auto scrollbar-thin scrollbar-thumb-[#891D1A]/30 scrollbar-track-transparent ${
           isDragging ? "cursor-grabbing" : "cursor-grab"
         }`}
         onMouseDown={handleMouseDown}
@@ -229,16 +208,15 @@ export function VisualTimeline({
         onMouseMove={handleMouseMove}
         style={{ scrollBehavior: isDragging ? "auto" : "smooth" }}
       >
-        {/* Inner wrapper for vertical centering and padding */}
         <div className="flex items-center justify-start min-h-[320px] px-16 py-8">
           <div className="relative min-w-max flex items-center">
-            {/* The timeline line - positioned to align with markers */}
+            {/* Timeline rail — Tuscan Red */}
             <div
-              className="absolute left-0 right-0 h-0.5"
+              className="absolute left-0 right-0 h-px"
               style={{
                 top: "50%",
                 transform: "translateY(-50%)",
-                background: `linear-gradient(to right, ${color}30, ${color}80, ${color}30)`,
+                background: `linear-gradient(to right, transparent, #891D1A60, #891D1A80, #891D1A60, transparent)`,
               }}
             />
 
@@ -248,15 +226,11 @@ export function VisualTimeline({
                 let globalPageIndex = 0;
                 return monthGroups.map((group, groupIndex) => (
                   <div key={group.key} className="flex items-center">
-                    {/* Month marker - subtle vertical line with label below */}
+                    {/* Month marker */}
                     <div className="relative flex items-center justify-center mx-4">
-                      <div
-                        className="w-px h-6 z-10"
-                        style={{ backgroundColor: `${color}60` }}
-                      />
+                      <div className="w-px h-5 z-10" style={{ backgroundColor: "#891D1A60" }} />
                       <span
-                        className="absolute top-full mt-2 font-[family-name:var(--font-typewriter)] text-[10px] uppercase tracking-wider whitespace-nowrap"
-                        style={{ color: `${color}` }}
+                        className="absolute top-full mt-2 font-[family-name:var(--font-crimson)] text-[11px] italic whitespace-nowrap text-[#891D1A]"
                       >
                         {group.label}
                       </span>
@@ -283,10 +257,7 @@ export function VisualTimeline({
 
                     {/* Connector to next month */}
                     {groupIndex < monthGroups.length - 1 && (
-                      <div
-                        className="w-10 h-px"
-                        style={{ backgroundColor: `${color}40` }}
-                      />
+                      <div className="w-8 h-px" style={{ backgroundColor: "#891D1A30" }} />
                     )}
                   </div>
                 ));
@@ -296,11 +267,11 @@ export function VisualTimeline({
         </div>
       </div>
 
-      {/* Instructions - only show on first/master timeline */}
+      {/* Scroll instructions */}
       {!timelineId && (
-        <div className="absolute bottom-3 left-1/2 -translate-x-1/2 bg-[#f5efe6]/80 px-3 py-1 rounded-full">
-          <p className="font-[family-name:var(--font-typewriter)] text-[10px] text-[#8b7355]">
-            Scroll or drag to navigate · Click a marker to view
+        <div className="absolute bottom-3 left-1/2 -translate-x-1/2 bg-[#F1E6D2]/80 px-3 py-1 rounded-full">
+          <p className="font-[family-name:var(--font-crimson)] text-[11px] italic text-[#5E657B]">
+            Scroll or drag to navigate · Click a photo to view
           </p>
         </div>
       )}
