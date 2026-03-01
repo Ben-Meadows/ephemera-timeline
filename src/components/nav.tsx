@@ -41,27 +41,20 @@ export async function Nav({ authenticated }: NavProps) {
 
         {/* Navigation links */}
         <nav className="flex items-center gap-6 text-sm">
-          <Link
-            href="/timeline"
-            className="font-[family-name:var(--font-crimson)] text-[#F1E6D2]/80 transition-colors hover:text-[#F1E6D2] relative group"
-          >
-            My Timeline
-            <span className="absolute -bottom-1 left-0 h-px w-0 bg-[#891D1A] transition-all group-hover:w-full" />
-          </Link>
-          <Link
-            href="/timelines"
-            className="font-[family-name:var(--font-crimson)] text-[#F1E6D2]/80 transition-colors hover:text-[#F1E6D2] relative group"
-          >
-            Collections
-            <span className="absolute -bottom-1 left-0 h-px w-0 bg-[#891D1A] transition-all group-hover:w-full" />
-          </Link>
-          <Link
-            href="/new"
-            className="font-[family-name:var(--font-crimson)] text-[#F1E6D2]/80 transition-colors hover:text-[#F1E6D2] relative group"
-          >
-            New Page
-            <span className="absolute -bottom-1 left-0 h-px w-0 bg-[#891D1A] transition-all group-hover:w-full" />
-          </Link>
+          {(["My Timeline", "Collections", "New Page"] as const).map((label) => {
+            const href = label === "My Timeline" ? "/timeline" : label === "Collections" ? "/timelines" : "/new";
+            return (
+              <Link
+                key={label}
+                href={href}
+                className="font-[family-name:var(--font-crimson)] relative group transition-opacity hover:opacity-100"
+                style={{ color: "#F1E6D2", opacity: 0.8 }}
+              >
+                {label}
+                <span className="absolute -bottom-1 left-0 h-px w-0 bg-[#891D1A] transition-all group-hover:w-full" />
+              </Link>
+            );
+          })}
 
           {authenticated ? (
             <form action={signOut}>
@@ -77,7 +70,8 @@ export async function Nav({ authenticated }: NavProps) {
             <div className="flex items-center gap-3">
               <Link
                 href="/auth/sign-in"
-                className="font-[family-name:var(--font-crimson)] text-sm text-[#F1E6D2]/80 hover:text-[#F1E6D2] transition-colors"
+                className="font-[family-name:var(--font-crimson)] text-sm transition-opacity hover:opacity-100"
+                style={{ color: "#F1E6D2", opacity: 0.8 }}
               >
                 Sign in
               </Link>
