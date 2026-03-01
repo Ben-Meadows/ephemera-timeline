@@ -21,32 +21,32 @@ export function TimelineViewToggle({ currentView }: TimelineViewToggleProps) {
   };
 
   return (
-    <div className="flex items-center gap-1 rounded-sm border border-[#d4a574]/50 bg-[#faf6f1] p-1">
+    <div className="flex items-center gap-1 rounded-sm border border-[#5E657B]/30 bg-[#F1E6D2] p-1">
       <button
         onClick={() => setView("list")}
         className={`
-          px-3 py-1.5 rounded-sm font-[family-name:var(--font-typewriter)] text-xs uppercase tracking-wider transition-all
+          px-3 py-1.5 rounded-sm font-[family-name:var(--font-crimson)] text-sm transition-all
           ${
             currentView === "list"
-              ? "bg-[#8b4513] text-white"
-              : "text-[#5c4033] hover:bg-[#d4a574]/20"
+              ? "bg-[#5E657B] text-[#F1E6D2]"
+              : "text-[#5E657B] hover:bg-[#5E657B]/10"
           }
         `}
       >
-        📋 List
+        List
       </button>
       <button
         onClick={() => setView("visual")}
         className={`
-          px-3 py-1.5 rounded-sm font-[family-name:var(--font-typewriter)] text-xs uppercase tracking-wider transition-all
+          px-3 py-1.5 rounded-sm font-[family-name:var(--font-crimson)] text-sm transition-all
           ${
             currentView === "visual"
-              ? "bg-[#8b4513] text-white"
-              : "text-[#5c4033] hover:bg-[#d4a574]/20"
+              ? "bg-[#5E657B] text-[#F1E6D2]"
+              : "text-[#5E657B] hover:bg-[#5E657B]/10"
           }
         `}
       >
-        ✨ Visual
+        Visual
       </button>
     </div>
   );
