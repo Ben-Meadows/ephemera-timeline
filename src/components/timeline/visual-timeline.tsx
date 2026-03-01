@@ -97,13 +97,13 @@ export function VisualTimeline({
         className="relative rounded-sm overflow-hidden"
         style={{
           backgroundColor: "#F1E6D2",
-          border: "1px solid rgba(137, 29, 26, 0.1)",
+          border: "1px solid rgba(137, 29, 26, 0.15)",
         }}
       >
         {label && (
           <div
             className="flex items-center gap-2 px-4 py-2 border-b"
-            style={{ borderColor: "rgba(137, 29, 26, 0.15)", backgroundColor: "#210706" }}
+            style={{ borderColor: "rgba(137, 29, 26, 0.15)", backgroundColor: "#210706", borderLeft: `4px solid ${color}` }}
           >
             <div className="w-2 h-2 rounded-full" style={{ backgroundColor: color }} />
             <span className="font-[family-name:var(--font-playfair)] text-sm font-semibold text-[#F1E6D2]">

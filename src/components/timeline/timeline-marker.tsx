@@ -5,7 +5,9 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import type { JournalPage } from "@/lib/types";
 
-// Zoom overlay component for the animation
+// Tilt angles that cycle based on marker index for collage feel
+const TILTS = ["-2deg", "1.5deg", "-1deg", "2.5deg"];
+
 function ZoomOverlay({
   imageUrl,
   title,
@@ -21,44 +23,33 @@ function ZoomOverlay({
   const [showSpinner, setShowSpinner] = useState(false);
 
   useEffect(() => {
-    // Start zoom animation after mount
-    const startTimer = requestAnimationFrame(() => {
-      setPhase("zooming");
-    });
-
-    // Show spinner if navigation takes longer than expected
-    const spinnerTimer = setTimeout(() => {
-      setShowSpinner(true);
-    }, 600);
-
+    const startTimer = requestAnimationFrame(() => setPhase("zooming"));
+    const spinnerTimer = setTimeout(() => setShowSpinner(true), 600);
     return () => {
       cancelAnimationFrame(startTimer);
       clearTimeout(spinnerTimer);
     };
   }, []);
 
-  // Calculate center position — use safe fallback for SSR
   const vw = typeof window !== "undefined" ? window.innerWidth : 1280;
   const vh = typeof window !== "undefined" ? window.innerHeight : 800;
   const endWidth = Math.min(vw * 0.85, 900);
   const endHeight = Math.min(vh * 0.85, 700);
   const endLeft = (vw - endWidth) / 2;
   const endTop = (vh - endHeight) / 2;
-
   const isZooming = phase === "zooming" || phase === "complete";
 
   return (
     <div className="fixed inset-0 z-50 pointer-events-none">
-      {/* Background dim */}
       <div
-        className="absolute inset-0 bg-[#2c1810]"
+        className="absolute inset-0"
         style={{
+          backgroundColor: "#210706",
           opacity: isZooming ? 0.95 : 0,
           transition: "opacity 500ms ease-out",
         }}
       />
 
-      {/* Zooming image container */}
       <div
         className="absolute overflow-hidden"
         style={{
@@ -66,10 +57,10 @@ function ZoomOverlay({
           top: isZooming ? endTop : startRect.top,
           width: isZooming ? endWidth : startRect.width,
           height: isZooming ? endHeight : startRect.height,
-          borderRadius: isZooming ? "4px" : "9999px",
+          borderRadius: isZooming ? "4px" : "2px",
           boxShadow: isZooming
             ? "0 25px 50px rgba(0, 0, 0, 0.5)"
-            : "0 4px 12px rgba(0, 0, 0, 0.2)",
+            : "0 4px 12px rgba(33, 7, 6, 0.3)",
           transition: "all 500ms cubic-bezier(0.4, 0, 0.2, 1)",
         }}
       >
@@ -83,16 +74,15 @@ function ZoomOverlay({
             priority
           />
         ) : (
-          <div className="w-full h-full bg-[#e8dfd3] flex items-center justify-center">
-            <span className="font-[family-name:var(--font-playfair)] text-2xl text-[#8b7355]">
+          <div className="w-full h-full flex items-center justify-center" style={{ backgroundColor: "#F1E6D2" }}>
+            <span className="font-[family-name:var(--font-playfair)] text-2xl text-[#5E657B]">
               {title || "Loading..."}
             </span>
           </div>
         )}
 
-        {/* Gradient overlay for text readability */}
-        <div 
-          className="absolute inset-0 bg-gradient-to-t from-[#2c1810]/60 via-transparent to-transparent"
+        <div
+          className="absolute inset-0 bg-gradient-to-t from-[#210706]/60 via-transparent to-transparent"
           style={{
             opacity: isZooming ? 1 : 0,
             transition: "opacity 400ms ease-out 200ms",
@@ -100,7 +90,7 @@ function ZoomOverlay({
         />
       </div>
 
-      {/* Title and loading indicator */}
+      {/* Title overlay */}
       <div
         className="absolute bottom-12 left-1/2 -translate-x-1/2 text-center"
         style={{
@@ -109,22 +99,20 @@ function ZoomOverlay({
           transition: "all 400ms ease-out 300ms",
         }}
       >
-        <h2 className="font-[family-name:var(--font-playfair)] text-2xl font-semibold text-white mb-2">
+        <h2 className="font-[family-name:var(--font-playfair)] text-2xl font-semibold text-[#F1E6D2] mb-2">
           {title || "Untitled"}
         </h2>
-        
-        {/* Loading indicator */}
         <div className="flex items-center justify-center gap-2">
           {showSpinner && isNavigating && (
-            <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+            <div className="w-4 h-4 border-2 border-[#F1E6D2]/30 border-t-[#F1E6D2] rounded-full animate-spin" />
           )}
-          <p className="font-[family-name:var(--font-typewriter)] text-sm text-white/70">
+          <p className="font-[family-name:var(--font-crimson)] text-sm text-[#F1E6D2]/70 italic">
             {isNavigating ? "Loading page..." : "Opening..."}
           </p>
         </div>
       </div>
 
-      {/* Decorative corners */}
+      {/* Corner accents on zoomed frame */}
       <div
         className="absolute pointer-events-none"
         style={{
@@ -136,11 +124,48 @@ function ZoomOverlay({
           transition: "all 500ms cubic-bezier(0.4, 0, 0.2, 1)",
         }}
       >
-        <div className="absolute top-0 left-0 w-6 h-6 border-l-2 border-t-2 border-[#d4a574]" />
-        <div className="absolute top-0 right-0 w-6 h-6 border-r-2 border-t-2 border-[#d4a574]" />
-        <div className="absolute bottom-0 left-0 w-6 h-6 border-l-2 border-b-2 border-[#d4a574]" />
-        <div className="absolute bottom-0 right-0 w-6 h-6 border-r-2 border-b-2 border-[#d4a574]" />
+        <div className="absolute top-0 left-0 w-6 h-6 border-l-2 border-t-2 border-[#891D1A]" />
+        <div className="absolute top-0 right-0 w-6 h-6 border-r-2 border-t-2 border-[#891D1A]" />
+        <div className="absolute bottom-0 left-0 w-6 h-6 border-l-2 border-b-2 border-[#891D1A]" />
+        <div className="absolute bottom-0 right-0 w-6 h-6 border-r-2 border-b-2 border-[#891D1A]" />
       </div>
+    </div>
+  );
+}
+
+type AnnotationProps = {
+  isAbove: boolean;
+  isVisible: boolean;
+  displayTitle: string;
+  pageTitle: string | null;
+};
+
+function Annotation({ isAbove, isVisible, displayTitle, pageTitle }: AnnotationProps) {
+  return (
+    <div
+      className={`absolute left-1/2 flex flex-col items-center transition-all duration-500 ${
+        isAbove ? "bottom-full mb-2" : "top-full mt-2"
+      } ${isVisible ? "opacity-100" : "opacity-0"}`}
+      style={{
+        transform: `translateX(-50%) ${isVisible ? "translateY(0)" : (isAbove ? "translateY(6px)" : "translateY(-6px)")}`,
+      }}
+    >
+      <div
+        className={`w-px h-4 bg-[#891D1A]/40 ${isAbove ? "order-2" : "order-1"}`}
+        style={{
+          transform: isVisible ? "scaleY(1)" : "scaleY(0)",
+          transformOrigin: isAbove ? "bottom" : "top",
+          transition: "transform 0.3s",
+        }}
+      />
+      <p
+        className={`font-[family-name:var(--font-playfair)] text-[12px] font-semibold text-[#210706] leading-tight text-center max-w-[110px] ${
+          isAbove ? "order-1 pb-0.5" : "order-2 pt-0.5"
+        }`}
+        title={pageTitle || "Untitled"}
+      >
+        {displayTitle}
+      </p>
     </div>
   );
 }
@@ -153,61 +178,11 @@ type TimelineMarkerProps = {
   isAbove?: boolean;
 };
 
-type AnnotationProps = {
-  isAbove: boolean;
-  isVisible: boolean;
-  color: string;
-  displayTitle: string;
-  pageTitle: string | null;
-  formattedDate: string;
-};
-
-function Annotation({ isAbove, isVisible, color, displayTitle, pageTitle, formattedDate }: AnnotationProps) {
-  return (
-    <div
-      className={`absolute left-1/2 flex flex-col items-center transition-all duration-500 ${
-        isAbove ? "bottom-full mb-3" : "top-full mt-3"
-      } ${isVisible ? "opacity-100" : "opacity-0"}`}
-      style={{
-        transform: `translateX(-50%) ${isVisible ? "translateY(0)" : (isAbove ? "translateY(8px)" : "translateY(-8px)")}`,
-      }}
-    >
-      {/* Connecting line */}
-      <div
-        className={`w-px h-5 transition-all duration-300 ${isAbove ? "order-2" : "order-1"}`}
-        style={{
-          backgroundColor: `${color}50`,
-          transform: isVisible ? "scaleY(1)" : "scaleY(0)",
-          transformOrigin: isAbove ? "bottom" : "top",
-        }}
-      />
-
-      {/* Text content */}
-      <div
-        className={`text-center max-w-[130px] ${isAbove ? "order-1 pb-0.5" : "order-2 pt-0.5"}`}
-      >
-        <p
-          className="font-[family-name:var(--font-playfair)] text-[13px] font-semibold text-[#2c1810] leading-tight"
-          title={pageTitle || "Untitled"}
-        >
-          {displayTitle}
-        </p>
-        <p
-          className="font-[family-name:var(--font-typewriter)] text-[9px] mt-0.5 uppercase tracking-wide"
-          style={{ color }}
-        >
-          {formattedDate}
-        </p>
-      </div>
-    </div>
-  );
-}
-
-export function TimelineMarker({ 
-  page, 
-  imageUrl, 
-  index, 
-  color = "#8b4513",
+export function TimelineMarker({
+  page,
+  imageUrl,
+  index,
+  color = "#891D1A",
   isAbove = true,
 }: TimelineMarkerProps) {
   const router = useRouter();
@@ -216,77 +191,56 @@ export function TimelineMarker({
   const [markerRect, setMarkerRect] = useState<DOMRect | null>(null);
   const [isPending, startTransition] = useTransition();
   const markerRef = useRef<HTMLButtonElement>(null);
+  const [isVisible, setIsVisible] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   const date = new Date(page.page_date);
-  const day = date.getDate();
-  const formattedDate = date.toLocaleDateString("en-US", { 
-    month: "short", 
-    day: "numeric", 
-    year: "numeric" 
+  const formattedDate = date.toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
   });
 
-  // Truncate title if too long
-  const displayTitle = page.title 
-    ? (page.title.length > 24 ? page.title.slice(0, 22) + "..." : page.title)
+  const displayTitle = page.title
+    ? page.title.length > 20 ? page.title.slice(0, 18) + "…" : page.title
     : "Untitled";
 
-  // Prefetch on hover for faster navigation
+  const tilt = TILTS[index % TILTS.length];
+
   const handleMouseEnter = () => {
     setIsHovered(true);
     router.prefetch(`/p/${page.id}`);
   };
 
-  // Handle click with zoom animation
   const handleClick = () => {
     if (!markerRef.current || isZooming) return;
-
-    // Get marker position for animation origin
     const rect = markerRef.current.getBoundingClientRect();
     setMarkerRect(rect);
     setIsZooming(true);
-
-    // Navigate using startTransition to track pending state
     setTimeout(() => {
-      startTransition(() => {
-        router.push(`/p/${page.id}`);
-      });
+      startTransition(() => router.push(`/p/${page.id}`));
     }, 300);
   };
 
-  // Track if marker is visible for entrance animation
-  const [isVisible, setIsVisible] = useState(false);
-  const containerRef = useRef<HTMLDivElement>(null);
-
-  // Entrance animation using IntersectionObserver
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
-
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
-            // Stagger the animation based on index
-            setTimeout(() => {
-              setIsVisible(true);
-            }, Math.min(index * 80, 400));
+            setTimeout(() => setIsVisible(true), Math.min(index * 80, 400));
           }
         });
       },
-      {
-        threshold: 0.2,
-        rootMargin: "0px 50px 0px 50px",
-      }
+      { threshold: 0.2, rootMargin: "0px 50px 0px 50px" }
     );
-
     observer.observe(container);
     return () => observer.disconnect();
   }, [index]);
 
   return (
     <>
-      {/* The marker container with annotation */}
-      <div 
+      <div
         ref={containerRef}
         className={`relative flex flex-col items-center transition-all duration-500 ease-out ${
           isVisible ? "opacity-100" : "opacity-0"
@@ -301,64 +255,82 @@ export function TimelineMarker({
           onMouseEnter={handleMouseEnter}
           onMouseLeave={() => setIsHovered(false)}
           disabled={isZooming}
-          className="relative group focus:outline-none focus-visible:ring-2 focus-visible:ring-[#8b4513] focus-visible:ring-offset-2 rounded-full disabled:cursor-wait z-10"
+          className="relative group focus:outline-none focus-visible:ring-2 focus-visible:ring-[#891D1A] focus-visible:ring-offset-2 disabled:cursor-wait z-10"
         >
-          {/* Large marker circle with thumbnail */}
+          {/* Polaroid card */}
           <div
-            className={`
-              relative w-[88px] h-[88px] rounded-full overflow-hidden transition-all duration-300
-              ${isHovered && !isZooming ? "scale-110 shadow-xl" : "shadow-lg"}
-              ${isZooming ? "scale-105" : ""}
-            `}
             style={{
-              backgroundColor: "#e8dfd3",
-              border: `3px solid ${isHovered || isZooming ? color : `${color}70`}`,
+              backgroundColor: "#FAFAF9",
+              padding: "7px 7px 0 7px",
+              transform: isHovered ? "rotate(0deg) scale(1.08)" : `rotate(${tilt}) scale(1)`,
+              transformOrigin: "center bottom",
+              transition: "transform 0.2s ease, box-shadow 0.2s ease",
               boxShadow: isHovered
-                ? `0 12px 32px rgba(44, 24, 16, 0.25), 0 0 0 4px ${color}20`
-                : "0 6px 20px rgba(44, 24, 16, 0.15)",
+                ? "0 12px 28px rgba(33, 7, 6, 0.35)"
+                : "0 4px 12px rgba(33, 7, 6, 0.22)",
+              border: "1px solid rgba(33, 7, 6, 0.08)",
             }}
           >
-            {imageUrl ? (
-              <Image
-                src={imageUrl}
-                alt={page.title || "Page"}
-                fill
-                sizes="88px"
-                className="object-cover"
-              />
-            ) : (
-              <div className="w-full h-full flex items-center justify-center bg-[#e8dfd3]">
-                <span className="font-[family-name:var(--font-typewriter)] text-lg text-[#8b7355]">
-                  {day}
+            {/* Photo area */}
+            <div className="relative w-[86px] h-[86px] overflow-hidden bg-[#F1E6D2]">
+              {imageUrl ? (
+                <Image
+                  src={imageUrl}
+                  alt={page.title || "Page"}
+                  fill
+                  sizes="86px"
+                  className="object-cover"
+                />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center">
+                  <span className="font-[family-name:var(--font-playfair)] text-lg text-[#5E657B]">
+                    {date.getDate()}
+                  </span>
+                </div>
+              )}
+
+              {/* Hover overlay */}
+              <div
+                className="absolute inset-0 bg-gradient-to-t from-[#210706]/50 to-transparent flex items-end justify-center pb-1.5 transition-opacity duration-200"
+                style={{ opacity: isHovered && !isZooming ? 1 : 0 }}
+              >
+                <span className="font-[family-name:var(--font-crimson)] text-[#F1E6D2] text-xs italic">
+                  View →
                 </span>
               </div>
-            )}
+            </div>
 
-            {/* Subtle hover overlay */}
-            <div
-              className={`
-                absolute inset-0 bg-gradient-to-t from-[#2c1810]/50 to-transparent 
-                flex items-end justify-center pb-2 transition-opacity duration-200
-                ${isHovered && !isZooming ? "opacity-100" : "opacity-0"}
-              `}
-            >
-              <span className="text-white text-sm font-medium">View →</span>
+            {/* White date strip */}
+            <div className="flex items-center justify-center h-7 px-1">
+              <span
+                className="font-[family-name:var(--font-crimson)] text-[11px] italic whitespace-nowrap"
+                style={{ color: "#891D1A" }}
+              >
+                {formattedDate}
+              </span>
             </div>
           </div>
+
+          {/* Dot on the timeline rail */}
+          <div
+            className="absolute left-1/2 w-2 h-2 rounded-full z-20"
+            style={{
+              top: "50%",
+              transform: "translateX(-50%) translateY(-50%)",
+              backgroundColor: color,
+            }}
+          />
         </button>
 
-        {/* Always-visible annotation */}
+        {/* Title annotation */}
         <Annotation
           isAbove={isAbove}
           isVisible={isVisible}
-          color={color}
           displayTitle={displayTitle}
           pageTitle={page.title}
-          formattedDate={formattedDate}
         />
       </div>
 
-      {/* Zoom overlay */}
       {isZooming && markerRect && (
         <ZoomOverlay
           imageUrl={imageUrl}
