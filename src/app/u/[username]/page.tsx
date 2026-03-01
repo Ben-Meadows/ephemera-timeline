@@ -24,7 +24,7 @@ export default async function PublicProfile({ params }: Params) {
     .from("journal_pages")
     .select("*")
     .eq("user_id", profile.id)
-    .in("visibility", ["public", "unlisted"])
+    .eq("visibility", "public")
     .order("page_date", { ascending: false });
 
   return (

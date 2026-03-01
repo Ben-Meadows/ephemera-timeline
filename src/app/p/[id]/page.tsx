@@ -4,6 +4,7 @@ import { PageContent } from "@/components/page/page-content";
 import { PageCollectionsManager } from "@/components/page/page-collections-manager";
 import { buttonClasses } from "@/components/ui/button";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { getPageImageUrl } from "@/lib/supabase/storage";
 import type { JournalPage, PageItem, Profile, Timeline } from "@/lib/types";
 import {
   createMarkerAction,
@@ -48,6 +49,11 @@ export default async function PageDetail({ params }: PageParams) {
     notFound();
   }
 
+  // Private pages are only visible to the owner
+  if (page.visibility === "private" && user?.id !== page.user_id) {
+    notFound();
+  }
+
   const { data: profile } = await supabase
     .from("profiles")
     .select("*")
@@ -60,9 +66,7 @@ export default async function PageDetail({ params }: PageParams) {
     .eq("page_id", page.id)
     .order("created_at", { ascending: true });
 
-  const { data: imageUrlData } = supabase.storage
-    .from("journal-pages")
-    .getPublicUrl(page.image_path);
+  const imageUrl = await getPageImageUrl(supabase, page.image_path, page.visibility);
 
   const isOwner = user?.id === page.user_id;
 
@@ -178,7 +182,7 @@ export default async function PageDetail({ params }: PageParams) {
       {/* Image and markers - View/Edit mode */}
       <PageContent
         pageId={page.id}
-        imageUrl={imageUrlData.publicUrl}
+        imageUrl={imageUrl}
         items={items ?? []}
         canEdit={isOwner}
         onCreate={createMarkerAction}

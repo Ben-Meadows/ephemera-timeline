@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { getPageImageUrl } from "@/lib/supabase/storage";
 import type { JournalPage } from "@/lib/types";
 
 type PageCardProps = {
@@ -28,11 +29,11 @@ function formatDate(dateString: string) {
 }
 
 export async function PageCard({ page, href }: PageCardProps) {
-  const supabase = await createSupabaseServerClient();
-  const { data } = supabase.storage
-    .from("journal-pages")
-    .getPublicUrl(page.image_path);
-  const imageUrl = page.image_url ?? data.publicUrl;
+  let imageUrl = page.image_url;
+  if (!imageUrl) {
+    const supabase = await createSupabaseServerClient();
+    imageUrl = await getPageImageUrl(supabase, page.image_path, page.visibility);
+  }
   const dateInfo = formatDate(page.page_date);
 
   return (

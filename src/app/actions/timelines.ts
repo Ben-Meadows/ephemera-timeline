@@ -303,6 +303,38 @@ export async function assignPageToTimelinesAction(payload: {
 
   const supabase = await createSupabaseServerClient();
 
+  // Verify the user owns the page
+  const { data: pageOwner } = await supabase
+    .from("journal_pages")
+    .select("id")
+    .eq("id", payload.page_id)
+    .eq("user_id", user.id)
+    .single();
+
+  if (!pageOwner) {
+    return { error: "Page not found or you don't have permission" };
+  }
+
+  // Enforce a reasonable cap on timeline assignments
+  if (payload.timeline_ids.length > 50) {
+    return { error: "Too many timeline assignments" };
+  }
+
+  // Verify all provided timelines belong to the user
+  if (payload.timeline_ids.length > 0) {
+    const { data: ownedTimelines } = await supabase
+      .from("timelines")
+      .select("id")
+      .in("id", payload.timeline_ids)
+      .eq("user_id", user.id);
+
+    const ownedIds = new Set((ownedTimelines ?? []).map((t) => t.id));
+    const allOwned = payload.timeline_ids.every((id) => ownedIds.has(id));
+    if (!allOwned) {
+      return { error: "One or more timelines not found or you don't have permission" };
+    }
+  }
+
   // First, remove all existing assignments for this page
   const { error: deleteError } = await supabase
     .from("page_timelines")
@@ -351,6 +383,19 @@ export async function getTimelinesForPageAction(payload: {
   }
 
   const supabase = await createSupabaseServerClient();
+
+  // Verify the user owns the page before revealing its timeline assignments
+  const { data: pageOwner } = await supabase
+    .from("journal_pages")
+    .select("id")
+    .eq("id", payload.page_id)
+    .eq("user_id", user.id)
+    .single();
+
+  if (!pageOwner) {
+    return { error: "Page not found or you don't have permission" };
+  }
+
   const { data, error } = await supabase
     .from("page_timelines")
     .select("timeline_id")

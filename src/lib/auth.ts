@@ -1,3 +1,4 @@
+import { redirect } from "next/navigation";
 import { createSupabaseServerClient } from "./supabase/server";
 
 export async function getCurrentUser() {
@@ -12,7 +13,7 @@ export async function getCurrentUser() {
 export async function requireUser() {
   const user = await getCurrentUser();
   if (!user) {
-    throw new Error("Not authenticated");
+    redirect("/auth/sign-in");
   }
   return user;
 }

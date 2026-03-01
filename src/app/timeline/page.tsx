@@ -6,6 +6,8 @@ import { buttonClasses } from "@/components/ui/button";
 import { TimelineViewToggle } from "@/components/timeline/timeline-view-toggle";
 import { TimelineFilter } from "@/components/timeline/timeline-filter";
 import { VisualTimeline } from "@/components/timeline/visual-timeline";
+import { isValidUUID } from "@/lib/validators";
+import { addImageUrls } from "@/lib/supabase/storage";
 import type { Timeline, JournalPage } from "@/lib/types";
 
 type SearchParams = Promise<{ view?: string; filter?: string }>;
@@ -29,7 +31,8 @@ export default async function TimelinePage({
 
   // Get view mode from URL params
   const viewMode = params.view === "visual" ? "visual" : "list";
-  const filterTimelineId = params.filter || null;
+  const filterParam = params.filter;
+  const filterTimelineId = filterParam && isValidUUID(filterParam) ? filterParam : null;
 
   // Fetch user's timelines for the filter dropdown
   const { data: timelines } = await supabase
@@ -38,19 +41,6 @@ export default async function TimelinePage({
     .eq("user_id", user.id)
     .order("name");
 
-  // Helper to add image URLs to pages
-  const addImageUrls = (pages: JournalPage[]): PageWithUrl[] => {
-    return pages.map((page) => {
-      const { data } = supabase.storage
-        .from("journal-pages")
-        .getPublicUrl(page.image_path);
-      return {
-        ...page,
-        image_url: data.publicUrl,
-      };
-    });
-  };
-
   // Fetch ALL pages for the master timeline (always needed for visual view)
   const { data: allPages } = await supabase
     .from("journal_pages")
@@ -58,7 +48,8 @@ export default async function TimelinePage({
     .eq("user_id", user.id)
     .order("page_date", { ascending: false });
 
-  const allPagesWithUrls = addImageUrls(allPages || []);
+  // Batch-sign private page images; use public URLs for public/unlisted
+  const allPagesWithUrls = await addImageUrls(supabase, allPages || []);
 
   // Fetch pages for each timeline (for visual stacked view)
   const { data: allPageTimelines } = await supabase

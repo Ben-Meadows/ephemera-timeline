@@ -180,7 +180,7 @@ function AnimatedArrow({
 
   return (
     <svg
-      className="absolute inset-0 pointer-events-none overflow-visible z-15"
+      className="absolute inset-0 pointer-events-none overflow-visible z-[15]"
       style={{ width: containerWidth, height: containerHeight }}
     >
       {/* Shadow/glow under the arrow */}
@@ -315,6 +315,7 @@ function AnnotationBox({
           {/* Close button */}
           <button
             onClick={onClose}
+            aria-label="Close annotation"
             className="absolute top-2 right-2 w-6 h-6 flex items-center justify-center rounded-full text-[#8b7355] hover:text-[#2c1810] hover:bg-[#d4a574]/20 transition-colors text-lg"
           >
             ×
@@ -433,7 +434,7 @@ export function PageViewMode({ imageUrl, items }: PageViewModeProps) {
     setTimeout(() => setSelectedItem(null), 300);
   }, []);
 
-  const annotationPosition = selectedItem
+  const annotationPosition = selectedItem && containerSize.width > 0
     ? calculateAnnotationPosition(
         selectedItem.x,
         selectedItem.y,

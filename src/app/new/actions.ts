@@ -4,7 +4,7 @@ import { headers } from "next/headers";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
-import { pageSchema } from "@/lib/validators";
+import { pageSchema, isValidUUID } from "@/lib/validators";
 import {
   sanitizeSingleLine,
   sanitizeText,
@@ -168,11 +168,11 @@ export async function createPageAction(
   // Handle timeline assignments
   const timelineIds = formData.get("timeline_ids");
   if (timelineIds && typeof timelineIds === "string") {
-    const ids = timelineIds.split(",").filter((id) => id.trim());
+    const ids = timelineIds.split(",").map((id) => id.trim()).filter((id) => id && isValidUUID(id));
     if (ids.length > 0) {
       const insertData = ids.map((timeline_id) => ({
         page_id: pageId,
-        timeline_id: timeline_id.trim(),
+        timeline_id,
       }));
       await supabase.from("page_timelines").insert(insertData);
     }

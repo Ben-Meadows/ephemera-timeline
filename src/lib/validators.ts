@@ -190,7 +190,7 @@ export const markerSchema = z.object({
     .string()
     .regex(DATE_REGEX, "Invalid date format")
     .optional()
-    .or(z.literal("")),
+    .or(z.literal("").transform(() => undefined)),
 
   source_location: safeText(120).optional(),
 });

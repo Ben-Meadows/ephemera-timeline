@@ -37,11 +37,13 @@ function ZoomOverlay({
     };
   }, []);
 
-  // Calculate center position
-  const endWidth = Math.min(window.innerWidth * 0.85, 900);
-  const endHeight = Math.min(window.innerHeight * 0.85, 700);
-  const endLeft = (window.innerWidth - endWidth) / 2;
-  const endTop = (window.innerHeight - endHeight) / 2;
+  // Calculate center position — use safe fallback for SSR
+  const vw = typeof window !== "undefined" ? window.innerWidth : 1280;
+  const vh = typeof window !== "undefined" ? window.innerHeight : 800;
+  const endWidth = Math.min(vw * 0.85, 900);
+  const endHeight = Math.min(vh * 0.85, 700);
+  const endLeft = (vw - endWidth) / 2;
+  const endTop = (vh - endHeight) / 2;
 
   const isZooming = phase === "zooming" || phase === "complete";
 
@@ -151,6 +153,56 @@ type TimelineMarkerProps = {
   isAbove?: boolean;
 };
 
+type AnnotationProps = {
+  isAbove: boolean;
+  isVisible: boolean;
+  color: string;
+  displayTitle: string;
+  pageTitle: string | null;
+  formattedDate: string;
+};
+
+function Annotation({ isAbove, isVisible, color, displayTitle, pageTitle, formattedDate }: AnnotationProps) {
+  return (
+    <div
+      className={`absolute left-1/2 flex flex-col items-center transition-all duration-500 ${
+        isAbove ? "bottom-full mb-3" : "top-full mt-3"
+      } ${isVisible ? "opacity-100" : "opacity-0"}`}
+      style={{
+        transform: `translateX(-50%) ${isVisible ? "translateY(0)" : (isAbove ? "translateY(8px)" : "translateY(-8px)")}`,
+      }}
+    >
+      {/* Connecting line */}
+      <div
+        className={`w-px h-5 transition-all duration-300 ${isAbove ? "order-2" : "order-1"}`}
+        style={{
+          backgroundColor: `${color}50`,
+          transform: isVisible ? "scaleY(1)" : "scaleY(0)",
+          transformOrigin: isAbove ? "bottom" : "top",
+        }}
+      />
+
+      {/* Text content */}
+      <div
+        className={`text-center max-w-[130px] ${isAbove ? "order-1 pb-0.5" : "order-2 pt-0.5"}`}
+      >
+        <p
+          className="font-[family-name:var(--font-playfair)] text-[13px] font-semibold text-[#2c1810] leading-tight"
+          title={pageTitle || "Untitled"}
+        >
+          {displayTitle}
+        </p>
+        <p
+          className="font-[family-name:var(--font-typewriter)] text-[9px] mt-0.5 uppercase tracking-wide"
+          style={{ color }}
+        >
+          {formattedDate}
+        </p>
+      </div>
+    </div>
+  );
+}
+
 export function TimelineMarker({ 
   page, 
   imageUrl, 
@@ -231,46 +283,6 @@ export function TimelineMarker({
     return () => observer.disconnect();
   }, [index]);
 
-  // Annotation component (title + date with connecting line)
-  const Annotation = () => (
-    <div 
-      className={`absolute left-1/2 flex flex-col items-center transition-all duration-500 ${
-        isAbove ? "bottom-full mb-3" : "top-full mt-3"
-      } ${isVisible ? "opacity-100" : "opacity-0"}`}
-      style={{
-        transform: `translateX(-50%) ${isVisible ? "translateY(0)" : (isAbove ? "translateY(8px)" : "translateY(-8px)")}`,
-      }}
-    >
-      {/* Connecting line */}
-      <div 
-        className={`w-px h-5 transition-all duration-300 ${isAbove ? "order-2" : "order-1"}`}
-        style={{ 
-          backgroundColor: `${color}50`,
-          transform: isVisible ? "scaleY(1)" : "scaleY(0)",
-          transformOrigin: isAbove ? "bottom" : "top",
-        }}
-      />
-      
-      {/* Text content */}
-      <div 
-        className={`text-center max-w-[130px] ${isAbove ? "order-1 pb-0.5" : "order-2 pt-0.5"}`}
-      >
-        <p 
-          className="font-[family-name:var(--font-playfair)] text-[13px] font-semibold text-[#2c1810] leading-tight"
-          title={page.title || "Untitled"}
-        >
-          {displayTitle}
-        </p>
-        <p 
-          className="font-[family-name:var(--font-typewriter)] text-[9px] mt-0.5 uppercase tracking-wide"
-          style={{ color: `${color}` }}
-        >
-          {formattedDate}
-        </p>
-      </div>
-    </div>
-  );
-
   return (
     <>
       {/* The marker container with annotation */}
@@ -336,7 +348,14 @@ export function TimelineMarker({
         </button>
 
         {/* Always-visible annotation */}
-        <Annotation />
+        <Annotation
+          isAbove={isAbove}
+          isVisible={isVisible}
+          color={color}
+          displayTitle={displayTitle}
+          pageTitle={page.title}
+          formattedDate={formattedDate}
+        />
       </div>
 
       {/* Zoom overlay */}

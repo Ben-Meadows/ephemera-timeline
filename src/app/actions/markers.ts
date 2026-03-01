@@ -49,6 +49,16 @@ export async function createMarkerAction(
     return rateLimitError(rateLimitResult.resetInSeconds);
   }
 
+  // Validate UUID format first (consistent with update/delete)
+  if (!isValidUUID(payload.page_id)) {
+    logValidationFailure("marker.create", {
+      userId: user.id,
+      ip,
+      reason: "Invalid UUID format",
+    });
+    return { error: "Invalid page ID" };
+  }
+
   // Sanitize inputs
   const sanitizedPayload = {
     page_id: payload.page_id,
@@ -86,6 +96,19 @@ export async function createMarkerAction(
   }
 
   const supabase = await createSupabaseServerClient();
+
+  // Verify the user owns the page
+  const { data: pageData } = await supabase
+    .from("journal_pages")
+    .select("id")
+    .eq("id", parsed.data.page_id)
+    .eq("user_id", user.id)
+    .single();
+
+  if (!pageData) {
+    return { error: "Page not found or you don't have permission" };
+  }
+
   const { data, error } = await supabase
     .from("page_items")
     .insert(parsed.data)
@@ -168,6 +191,19 @@ export async function updateMarkerAction(
   }
 
   const supabase = await createSupabaseServerClient();
+
+  // Verify the user owns the page
+  const { data: pageData } = await supabase
+    .from("journal_pages")
+    .select("id")
+    .eq("id", parsed.data.page_id)
+    .eq("user_id", user.id)
+    .single();
+
+  if (!pageData) {
+    return { error: "Page not found or you don't have permission" };
+  }
+
   const { error } = await supabase
     .from("page_items")
     .update({
@@ -225,6 +261,19 @@ export async function deleteMarkerAction(payload: {
   }
 
   const supabase = await createSupabaseServerClient();
+
+  // Verify the user owns the page
+  const { data: pageData } = await supabase
+    .from("journal_pages")
+    .select("id")
+    .eq("id", payload.page_id)
+    .eq("user_id", user.id)
+    .single();
+
+  if (!pageData) {
+    return { error: "Page not found or you don't have permission" };
+  }
+
   const { error } = await supabase
     .from("page_items")
     .delete()
