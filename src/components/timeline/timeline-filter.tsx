@@ -28,16 +28,16 @@ export function TimelineFilter({ timelines, currentFilter }: TimelineFilterProps
 
   return (
     <div className="flex items-center gap-2">
-      <span className="font-[family-name:var(--font-typewriter)] text-xs text-[#8b7355]">
+      <span className="font-[family-name:var(--font-crimson)] text-sm text-[#5E657B]">
         Filter:
       </span>
       <select
         value={currentFilter || ""}
         onChange={(e) => setFilter(e.target.value || null)}
         className="
-          rounded-sm border border-[#d4a574]/50 bg-[#faf6f1] px-3 py-1.5
-          font-[family-name:var(--font-crimson)] text-sm text-[#2c1810]
-          focus:border-[#8b4513] focus:outline-none focus:ring-1 focus:ring-[#8b4513]
+          rounded-sm border border-[#5E657B]/40 bg-[#F1E6D2] px-3 py-1.5
+          font-[family-name:var(--font-crimson)] text-sm text-[#210706]
+          focus:border-[#5E657B] focus:outline-none focus:ring-1 focus:ring-[#5E657B]
         "
       >
         <option value="">All Pages</option>
