@@ -2,7 +2,6 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { PageCard } from "@/components/page/page-card";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
-import { buttonClasses } from "@/components/ui/button";
 import { TimelineViewToggle } from "@/components/timeline/timeline-view-toggle";
 import { TimelineFilter } from "@/components/timeline/timeline-filter";
 import { VisualTimeline } from "@/components/timeline/visual-timeline";
@@ -93,40 +92,59 @@ export default async function TimelinePage({
     <div className="mx-auto max-w-5xl px-4 py-8 space-y-6">
       {/* Header */}
       <div
-        className="rounded-sm bg-[#f5efe6] p-6"
+        className="rounded-sm overflow-hidden"
         style={{
-          boxShadow: "0 2px 12px rgba(44, 24, 16, 0.06)",
-          border: "1px solid rgba(139, 69, 19, 0.1)",
+          boxShadow: "0 2px 16px rgba(33, 7, 6, 0.18)",
+          border: "1px solid rgba(137, 29, 26, 0.2)",
         }}
       >
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <p className="font-[family-name:var(--font-typewriter)] text-xs uppercase tracking-[0.2em] text-[#8b4513]">
-              ✦ My Collection
-            </p>
-            <h1 className="mt-1 font-[family-name:var(--font-playfair)] text-2xl font-semibold text-[#2c1810]">
-              {selectedTimeline ? (
-                <>
-                  <span className="mr-2">{selectedTimeline.icon}</span>
-                  {selectedTimeline.name}
-                </>
-              ) : (
-                "Your Timeline"
-              )}
-            </h1>
-            <p className="mt-1 font-[family-name:var(--font-crimson)] text-sm text-[#5c4033]">
-              {selectedTimeline
-                ? selectedTimeline.description || "Filtered collection"
-                : "All pages arranged chronologically"}
-            </p>
+        {/* Dark header band */}
+        <div
+          className="relative p-6"
+          style={{
+            backgroundColor: "#210706",
+            borderLeft: "4px solid #891D1A",
+          }}
+        >
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <p className="font-[family-name:var(--font-crimson)] text-xs text-[#891D1A] italic">
+                My Collection
+              </p>
+              <h1 className="mt-1 font-[family-name:var(--font-playfair)] text-2xl font-semibold text-[#F1E6D2]">
+                {selectedTimeline ? (
+                  <>
+                    <span className="mr-2">{selectedTimeline.icon}</span>
+                    {selectedTimeline.name}
+                  </>
+                ) : (
+                  "Your Timeline"
+                )}
+              </h1>
+              <p className="mt-1 font-[family-name:var(--font-crimson)] text-sm text-[#F1E6D2]/60">
+                {selectedTimeline
+                  ? selectedTimeline.description || "Filtered collection"
+                  : "All pages arranged chronologically"}
+              </p>
+            </div>
+            <Link
+              href="/new"
+              className="shrink-0 rounded-sm px-4 py-2 font-[family-name:var(--font-crimson)] text-sm font-semibold transition-all hover:opacity-90"
+              style={{ backgroundColor: "#891D1A", color: "#F1E6D2" }}
+            >
+              + New Page
+            </Link>
           </div>
-          <Link href="/new" className={buttonClasses("primary", "md")}>
-            + New Page
-          </Link>
         </div>
 
-        {/* Controls row */}
-        <div className="mt-4 flex flex-wrap items-center gap-4 pt-4 border-t border-[#d4a574]/30">
+        {/* Controls row — cream background */}
+        <div
+          className="flex flex-wrap items-center gap-4 px-6 py-3"
+          style={{
+            backgroundColor: "#F1E6D2",
+            borderTop: "2px solid rgba(137, 29, 26, 0.25)",
+          }}
+        >
           <TimelineViewToggle currentView={viewMode} />
           <TimelineFilter
             timelines={(timelines as Timeline[]) || []}
@@ -135,7 +153,7 @@ export default async function TimelinePage({
           {filterTimelineId && (
             <Link
               href="/timeline"
-              className="font-[family-name:var(--font-typewriter)] text-xs text-[#722f37] hover:underline"
+              className="font-[family-name:var(--font-crimson)] text-sm text-[#891D1A] hover:underline"
             >
               × Clear filter
             </Link>
