@@ -46,7 +46,7 @@ export async function addImageUrls<
       .from("journal-pages")
       .createSignedUrls(privatePaths, SIGNED_URL_TTL);
     (signedUrls ?? []).forEach(({ path, signedUrl }) => {
-      if (signedUrl) signedUrlMap[path] = signedUrl;
+      if (path && signedUrl) signedUrlMap[path] = signedUrl;
     });
   }
 
