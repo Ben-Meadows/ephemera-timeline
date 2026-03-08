@@ -18,7 +18,7 @@ type NavProps = {
 export async function Nav({ authenticated }: NavProps) {
   return (
     <header style={{ backgroundColor: "#210706", borderBottom: "2px solid #891D1A" }}>
-      <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-4">
+      <div className="flex w-full items-center justify-between px-8 py-4">
         {/* Logo */}
         <Link href="/" className="group flex items-center gap-3">
           <div

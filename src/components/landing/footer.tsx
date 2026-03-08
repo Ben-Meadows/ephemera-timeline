@@ -2,7 +2,7 @@ import Link from "next/link";
 
 export function Footer() {
   return (
-    <footer className="bg-[#2c1810] text-[#faf6f1] py-16">
+    <footer className="bg-[#210706] text-[#F1E6D2] py-16" style={{ borderTop: "2px solid #891D1A" }}>
       <div className="container mx-auto px-6">
         <div className="grid md:grid-cols-4 gap-12 mb-16">
           <div className="col-span-1 md:col-span-2">
@@ -14,14 +14,14 @@ export function Footer() {
                 Ephemera Timeline
               </span>
             </div>
-            <p className="font-[family-name:var(--font-crimson)] text-lg text-[#faf6f1]/60 max-w-sm">
+            <p className="font-[family-name:var(--font-crimson)] text-lg text-[#F1E6D2]/80 max-w-sm">
               Dedicated to the preservation of transient paper artifacts. Build your digital archive today.
             </p>
           </div>
           
           <div>
-            <h4 className="font-[family-name:var(--font-typewriter)] text-sm uppercase tracking-widest text-[#d2b48c] mb-6">Explore</h4>
-            <ul className="space-y-4 font-[family-name:var(--font-crimson)] text-lg text-[#faf6f1]/80">
+            <h4 className="font-[family-name:var(--font-typewriter)] text-sm uppercase tracking-widest !text-[#F1E6D2] mb-6">Explore</h4>
+            <ul className="space-y-4 font-[family-name:var(--font-crimson)] text-lg text-[#F1E6D2]">
               <li><Link href="/timeline" className="hover:text-[#d2b48c] transition-colors">My Timeline</Link></li>
               <li><Link href="/timelines" className="hover:text-[#d2b48c] transition-colors">Collections</Link></li>
               <li><Link href="/new" className="hover:text-[#d2b48c] transition-colors">New Page</Link></li>
@@ -30,17 +30,17 @@ export function Footer() {
           </div>
           
           <div>
-            <h4 className="font-[family-name:var(--font-typewriter)] text-sm uppercase tracking-widest text-[#d2b48c] mb-6">Legal</h4>
-            <ul className="space-y-4 font-[family-name:var(--font-crimson)] text-lg text-[#faf6f1]/80">
-              <li><span className="text-[#faf6f1]/40 cursor-default">Privacy Policy</span></li>
-              <li><span className="text-[#faf6f1]/40 cursor-default">Terms of Service</span></li>
-              <li><span className="text-[#faf6f1]/40 cursor-default">Cookie Policy</span></li>
+            <h4 className="font-[family-name:var(--font-typewriter)] text-sm uppercase tracking-widest !text-[#F1E6D2] mb-6">Legal</h4>
+            <ul className="space-y-4 font-[family-name:var(--font-crimson)] text-lg text-[#F1E6D2]">
+              <li><span className="text-[#F1E6D2]/70 cursor-default">Privacy Policy</span></li>
+              <li><span className="text-[#F1E6D2]/70 cursor-default">Terms of Service</span></li>
+              <li><span className="text-[#F1E6D2]/70 cursor-default">Cookie Policy</span></li>
             </ul>
           </div>
         </div>
         
         <div className="pt-8 border-t border-[#faf6f1]/10 flex flex-col md:flex-row justify-between items-center gap-4">
-          <p className="font-[family-name:var(--font-crimson)] text-[#faf6f1]/40 text-sm">
+          <p className="font-[family-name:var(--font-crimson)] text-[#F1E6D2]/60 text-sm">
             © 2026 Ephemera Timeline. All rights reserved.
           </p>
           <div className="flex items-center gap-6">
